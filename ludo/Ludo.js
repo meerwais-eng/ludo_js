@@ -4,7 +4,6 @@ import { UI } from './UI.js';
 export class Ludo {
     currentPositions = {}; 
     isTeamMode = false; 
-    winner = null;
 
     _diceValue;
     get diceValue() {
@@ -52,203 +51,223 @@ export class Ludo {
         this.resetGame();
     }
     
-    listenDiceClick() {
-        UI.listenDiceClick(this.handleDiceClick.bind(this));
-    }
-
-    listenResetClick() {
-        UI.listenResetClick(this.resetGame.bind(this));
-    }
-
-    listenPieceClick() {
-        UI.listenPieceClick(this.handlePieceClick.bind(this));
-    }
-    
     listenPlayerCountChange() {
-        UI.listenPlayerCountChange(event => {
+        UI.listenPlayerCountChange((event) => {
             this.updatePlayerCount(event.target.value);
             this.resetGame();
         });
     }
 
     updatePlayerCount(count) {
-        if (count === '4T') {
-            this.isTeamMode = true;
-            setPlayers(['P1', 'P2', 'P3', 'P4']);
-        } else {
-            this.isTeamMode = false;
-            const activePlayers = ALL_PLAYERS.slice(0, parseInt(count));
-            setPlayers(activePlayers); 
-        }
-    }
-
-    resetGame() {
-        // Reset all piece positions to base
-        ALL_PLAYERS.forEach(player => {
-            this.currentPositions[player] = BASE_POSITIONS[player].slice();
-            [0, 1, 2, 3].forEach(piece => {
-                this.setPiecePosition(player, piece, BASE_POSITIONS[player][piece]); 
-            })
-        })
+        const playerCount = parseInt(count, 10);
+        let activePlayers;
         
-        // Use the dynamically set PLAYERS array from constants module
-        const initialCount = document.querySelector('#player-count')?.value || '4';
-        this.updatePlayerCount(initialCount); // Re-run to ensure PLAYERS array is correctly set
-        
-        this.turn = 0;
-        this.state = STATE.DICE_NOT_ROLLED;
-        this.winner = null;
-        UI.setGameVisibility(PLAYERS);
-    }
+        // Check for the 4-Player Team Mode identifier '4T'
+        this.isTeamMode = count === '4T';
 
-    // *** CRITICAL FIX: Updates internal state AND the UI ***
-    setPiecePosition(player, piece, newPosition) {
-        this.currentPositions[player][piece] = newPosition;
-        UI.setPiecePosition(player, piece, newPosition); 
-    }
-    
-    rollDice() {
-        return Math.floor(Math.random() * 6) + 1;
-    }
-
-    handleDiceClick() {
-        if(this.state !== STATE.DICE_NOT_ROLLED) {
-            console.error('Cannot roll dice now.');
-            return;
+        if (this.isTeamMode) {
+            // Team Mode: P1(A) -> P4(B) -> P2(A) -> P3(B) (Clockwise order for fair turns)
+            activePlayers = ALL_PLAYERS; 
+        } else if (playerCount === 2) {
+            // 2 players: P1 and P2 (opposite corners)
+            activePlayers = ['P1', 'P2']; 
+        } else if (playerCount === 3) {
+            // 3 players: P1, P4, P2 
+            activePlayers = ['P1', 'P4', 'P2']; 
+        } else { 
+            // 4 players (Individual)
+            activePlayers = ALL_PLAYERS; 
         }
-
-        this.diceValue = this.rollDice();
-        this.state = STATE.DICE_ROLLED; 
-
-        // Add a slight delay to allow the dice animation to start
-        setTimeout(() => {
-            this.handleDiceRoll();
-        }, 500);
+        
+        setPlayers(activePlayers);
+        
+        UI.setGameVisibility(activePlayers);
     }
 
-    handleDiceRoll() {
-        const player = PLAYERS[this.turn];
-        const movablePieces = this.getMovablePieces(player, this.diceValue);
+    listenDiceClick() {
+        UI.listenDiceClick(this.onDiceClick.bind(this))
+    }
 
-        if (movablePieces.length > 0) {
-            this.state = STATE.PIECE_NOT_SELECTED;
-            UI.highlightPieces(player, movablePieces);
+    onDiceClick() {
+        console.log('dice clicked!');
+        this.diceValue = 1 + Math.floor(Math.random() * 6);
+        this.state = STATE.DICE_ROLLED;
+        
+        this.checkForEligiblePieces();
+    }
+
+    checkForEligiblePieces() {
+        const player = PLAYERS[this.turn]; 
+        const eligiblePieces = this.getEligiblePieces(player);
+        
+        // Automatic Move Logic (If only one piece can move)
+        if(eligiblePieces.length === 1) {
+            const piece = eligiblePieces[0];
+            console.log(`Auto-moving piece ${piece} for player ${player}`);
+            this.handlePieceClick(player, piece);
+        } else if(eligiblePieces.length > 1) {
+            UI.highlightPieces(player, eligiblePieces);
         } else {
-            // Cannot move, switch turn
+            // No eligible moves, pass turn
             this.incrementTurn();
         }
     }
 
-    getMovablePieces(player, diceValue) {
-        const movablePieces = [];
-        for (let i = 0; i < 4; i++) {
-            const currentPosition = this.currentPositions[player][i];
-            
-            // Piece in Base: Can only move out with a 6
-            if (BASE_POSITIONS[player].includes(currentPosition) && diceValue === 6) {
-                movablePieces.push(i);
-            }
-            // Piece on track or in Home Entrance: Check if move is valid
-            else if (!BASE_POSITIONS[player].includes(currentPosition) && currentPosition !== HOME_POSITIONS[player]) {
-                if (this.canMove(player, i, diceValue)) {
-                    movablePieces.push(i);
-                }
-            }
-        }
-        return movablePieces;
+    incrementTurn() {
+        this.turn = (this.turn + 1) % PLAYERS.length; 
+        this.state = STATE.DICE_NOT_ROLLED;
     }
 
-    canMove(player, piece, diceValue) {
-        const currentPosition = this.currentPositions[player][piece];
-        let targetPosition = currentPosition;
+    getEligiblePieces(player) {
+        return [0, 1, 2, 3].filter(piece => {
+            const currentPosition = this.currentPositions[player][piece];
 
-        for (let i = 0; i < diceValue; i++) {
-            targetPosition = this.getIncrementedPosition(player, piece, targetPosition);
-        }
+            if(currentPosition === HOME_POSITIONS[player]) {
+                return false;
+            }
 
-        // Check if the target position is the HOME position
-        if (targetPosition === HOME_POSITIONS[player]) {
+            // Piece is in base and dice is not 6
+            if(
+                BASE_POSITIONS[player].includes(currentPosition)
+                && this.diceValue !== 6
+            ){
+                return false;
+            }
+
+            // Check if piece would overshoot the Home Position
+            const newPosition = currentPosition + this.diceValue;
+            const homeEntranceStart = HOME_ENTRANCE[player][0];
+            const homePosition = HOME_POSITIONS[player];
+
+            if (
+                (currentPosition >= homeEntranceStart && currentPosition < homePosition) || 
+                (newPosition > homeEntranceStart && newPosition < homePosition)
+            ) {
+                 if (newPosition > homePosition) {
+                    return false;
+                 }
+            }
+
             return true;
-        }
-
-        // Check if the piece overshoots the HOME position
-        if (targetPosition > HOME_POSITIONS[player]) {
-            return false;
-        }
-
-        return true;
+        });
     }
 
-    handlePieceClick(event) {
-        if (this.state !== STATE.PIECE_NOT_SELECTED) return;
+    listenResetClick() {
+        UI.listenResetClick(this.resetGame.bind(this))
+    }
 
-        const pieceElement = event.target.closest('.player-piece');
-        if (!pieceElement) return;
-
-        const player = pieceElement.getAttribute('player-id');
-        const piece = parseInt(pieceElement.getAttribute('piece'));
-        const activePlayer = PLAYERS[this.turn];
-
-        if (player !== activePlayer) return;
-
-        const movablePieces = this.getMovablePieces(player, this.diceValue);
-        if (!movablePieces.includes(piece)) return;
+    resetGame() {
+        console.log('reset game');
         
-        UI.unhighlightPieces();
+        this.currentPositions = {}; 
+        PLAYERS.forEach(player => {
+            this.currentPositions[player] = structuredClone(BASE_POSITIONS[player]);
+        });
 
-        // Start piece movement
-        this.movePiece(player, piece);
+        PLAYERS.forEach(player => {
+            [0, 1, 2, 3].forEach(piece => {
+                this.setPiecePosition(player, piece, this.currentPositions[player][piece])
+            })
+        });
+
+        this.turn = 0;
+        this.state = STATE.DICE_NOT_ROLLED;
     }
 
-    movePiece(player, piece) {
-        this.state = STATE.PIECE_SELECTED;
-        let moves = this.diceValue;
-
-        const moveInterval = setInterval(() => {
-            if (moves <= 0) {
-                clearInterval(moveInterval);
-                this.onMoveFinish(player, piece);
-                return;
-            }
-
-            this.incrementPiecePosition(player, piece);
-            moves--;
-        }, 200);
+    listenPieceClick() {
+        UI.listenPieceClick(this.onPieceClick.bind(this));
     }
 
-    onMoveFinish(player, piece) {
-        const currentPosition = this.currentPositions[player][piece];
+    onPieceClick(event) {
+        const target = event.target;
 
-        // Check for win condition
-        if (currentPosition === HOME_POSITIONS[player] && this.hasPlayerWon(player)) {
-            this.winner = player;
-            this.state = STATE.GAME_ENDED;
-            alert(`${player} wins!`);
+        if(!target.classList.contains('player-piece') || !target.classList.contains('highlight')) {
             return;
         }
 
-        // Check for kill
-        const isKill = this.checkForKill(player, piece);
+        const player = target.getAttribute('player-id');
+        const piece = target.getAttribute('piece');
+        
+        if(player !== PLAYERS[this.turn]) {
+            console.error('Not the active player\'s piece!');
+            return;
+        }
+        
+        this.handlePieceClick(player, piece);
+    }
 
-        // If the player rolled a 6 or got a kill, they get another turn.
-        if(isKill || this.diceValue === 6) {
+    handlePieceClick(player, piece) {
+        piece = parseInt(piece, 10);
+        
+        const currentPosition = this.currentPositions[player][piece];
+        
+        if(BASE_POSITIONS[player].includes(currentPosition) && this.diceValue === 6) {
+            this.setPiecePosition(player, piece, START_POSITIONS[player]);
             this.state = STATE.DICE_NOT_ROLLED;
             return;
         }
 
-        this.incrementTurn();
+        UI.unhighlightPieces(); 
+        this.movePiece(player, piece, this.diceValue);
+    }
+
+    setPiecePosition(player, piece, newPosition) {
+        piece = parseInt(piece, 10);
+        this.currentPositions[player][piece] = newPosition;
+        UI.setPiecePosition(player, piece, newPosition)
+    }
+
+    movePiece(player, piece, moveBy) {
+        const interval = setInterval(() => {
+            this.incrementPiecePosition(player, piece);
+            moveBy--;
+
+            if(moveBy === 0) {
+                clearInterval(interval);
+
+                if(this.hasPlayerWon(player)) {
+                    const winMessage = this.isTeamMode 
+                        ? `Team ${TEAM_PLAYERS.getTeam(player)} has won!` 
+                        : `Player: ${player} has won!`;
+                    alert(winMessage);
+                    this.resetGame();
+                    return;
+                }
+
+                const isKill = this.checkForKill(player, piece);
+
+                if(isKill || this.diceValue === 6) {
+                    this.state = STATE.DICE_NOT_ROLLED;
+                    return;
+                }
+
+                this.incrementTurn();
+            }
+        }, 200);
     }
 
     checkForKill(player, piece) {
         const currentPosition = this.currentPositions[player][piece];
         let kill = false;
 
-        const opponents = PLAYERS.filter(p => p !== player);
+        const activePlayers = PLAYERS;
+        
+        // Determine opponents based on game mode
+        const opponents = activePlayers.filter(p => {
+            if (this.isTeamMode) {
+                // In Team Mode, only kill players not on the same team
+                return TEAM_PLAYERS.getTeam(p) !== TEAM_PLAYERS.getTeam(player);
+            } else {
+                // In Individual Mode, kill anyone who is not the current player
+                return p !== player;
+            }
+        });
 
         opponents.forEach(opponent => {
             [0, 1, 2, 3].forEach(opponentPiece => {
                 const opponentPosition = this.currentPositions[opponent][opponentPiece];
 
+                // Kill only at non-safe positions
                 if(currentPosition === opponentPosition && !SAFE_POSITIONS.includes(currentPosition)) {
                     this.setPiecePosition(opponent, opponentPiece, BASE_POSITIONS[opponent][opponentPiece]);
                     kill = true;
@@ -296,11 +315,5 @@ export class Ludo {
         }
 
         return currentPosition + 1;
-    }
-
-    incrementTurn() {
-        let nextTurn = (this.turn + 1) % PLAYERS.length;
-        this.turn = nextTurn;
-        this.state = STATE.DICE_NOT_ROLLED;
     }
 }

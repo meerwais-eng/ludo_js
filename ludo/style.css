@@ -61,7 +61,7 @@
 }
 
 [player-id="P1"].player-piece {
-    background-color: #2eafff; /* Blue */
+    background-color: #2eafff; /* Red/Blue */
 }
 
 [player-id="P2"].player-piece {
@@ -69,11 +69,11 @@
 }
 
 [player-id="P3"].player-piece {
-    background-color: #ffc900; /* Yellow */
+    background-color: #ffc900; /* Yellow/Orange */
 }
 
 [player-id="P4"].player-piece {
-    background-color: #f44336; /* Purple/Red */
+    background-color: #f44336; /* Blue/Purple */
 }
 
 
@@ -87,25 +87,25 @@
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7; 
+    border-color: #1295e7; /* P1 (Bottom-Left) Base */
 }
 
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #049645; 
+    border-color: #049645; /* P2 (Top-Right) Base */
 }
 
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
-    border-color: #e7a712; 
+    border-color: #e7a712; /* P3 (Top-Left) Base */
 }
 
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; 
+    border-color: #e70a0a; /* P4 (Bottom-Right) Base */
 }
 
 
@@ -157,7 +157,7 @@
 }
 
 /* ------------------------------------------- */
-/* 3D DICE STYLING                             */
+/* 3D DICE STYLING (Replaces old #dice-btn)    */
 /* ------------------------------------------- */
 
 .dice-container {
@@ -226,60 +226,63 @@
 }
 
 /* --- Positioning the Faces to form a Cube --- */
-/* These define the *initial* face orientation */
-.front  { transform: rotateY(0deg) translateZ(20px); }    /* Nth-child 1 */
-.back   { transform: rotateY(180deg) translateZ(20px); }  /* Nth-child 2 */
-.right  { transform: rotateY(90deg) translateZ(20px); }   /* Nth-child 3 */
-.left   { transform: rotateY(-90deg) translateZ(20px); }  /* Nth-child 4 */
-.top    { transform: rotateX(90deg) translateZ(20px); }   /* Nth-child 5 */
-.bottom { transform: rotateX(-90deg) translateZ(20px); }  /* Nth-child 6 */
+.front  { transform: rotateY(0deg) translateZ(20px); }
+.back   { transform: rotateY(180deg) translateZ(20px); }
+.right  { transform: rotateY(90deg) translateZ(20px); }
+.left   { transform: rotateY(-90deg) translateZ(20px); }
+.top    { transform: rotateX(90deg) translateZ(20px); }
+.bottom { transform: rotateX(-90deg) translateZ(20px); }
 
-
-/* --- CORRECTED Dot Layouts for 1-6 --- */
+/* --- Dot Layouts --- 
+Note: Each face should be populated with 6 dots in HTML for this CSS structure to work properly. 
+The CSS handles which dots are visible and where they are placed using grid-area.
+The provided HTML structure already includes the 6 face divs for this.
+*/
+/* --- Dot Layouts (The numbers) --- */
 
 /* Initially, hide all dots */
 .face .dot {
     display: none; 
 }
 
-/* 1. Roll 1: Face 1 (Front) must show 1 dot (Center) */
+/* 1 */
 .face:nth-child(1) .dot:nth-child(1) { 
     display: block; 
     grid-area: g; 
-} 
+} /* Center dot */
 
-/* 2. Roll 2: Face 3 (Right) must show 2 dots (Top-Left, Bottom-Right) */
-.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: b; } 
+/* 2 */
+.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
+.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: b; } /* Bottom-Right */
 
-/* 3. Roll 3: Face 5 (Top) must show 3 dots (Top-Left, Center, Bottom-Right) */
-.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: g; } 
-.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: b; } 
+/* 3 */
+.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
+.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: g; } /* Center */
+.face:nth-child(3) .dot:nth-child(3) { display: block; grid-area: b; } /* Bottom-Right */
 
-/* 4. Roll 4: Face 6 (Bottom) must show 4 dots (Corners) */
-.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: d; } 
-.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: b; } 
-
-/* 5. Roll 5: Face 4 (Left) must show 5 dots (Corners + Center) */
+/* 4 */
 .face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
 .face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: g; } 
-.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: d; } 
-.face:nth-child(4) .dot:nth-child(5) { display: block; grid-area: b; } 
+.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: d; } 
+.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: b; } 
 
-/* 6. Roll 6: Face 2 (Back) must show 6 dots (Side Mids + Corners) */
-.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(2) .dot:nth-child(3) { display: block; grid-area: e; } 
-.face:nth-child(2) .dot:nth-child(4) { display: block; grid-area: f; } 
-.face:nth-child(2) .dot:nth-child(5) { display: block; grid-area: d; } 
-.face:nth-child(2) .dot:nth-child(6) { display: block; grid-area: b; } 
+/* 5 */
+.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: g; } 
+.face:nth-child(5) .dot:nth-child(4) { display: block; grid-area: d; } 
+.face:nth-child(5) .dot:nth-child(5) { display: block; grid-area: b; } 
 
+/* 6 */
+.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: e; } 
+.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: f; } 
+.face:nth-child(6) .dot:nth-child(5) { display: block; grid-area: d; } 
+.face:nth-child(6) .dot:nth-child(6) { display: block; grid-area: b; } 
 
-/* --- Rotations to Show the Rolled Value (Roll X applies face-X class) --- */
+/* --- Rotations to Show the Rolled Value --- */
+/* (Keep these rotations as they were) */
 .face-1 { transform: rotateX(0deg) rotateY(0deg); } 
 .face-2 { transform: rotateY(-90deg); } 
 .face-3 { transform: rotateX(90deg); } 
