@@ -53,71 +53,37 @@ export const COORDINATES_MAP = {
     51: [6, 14],
 
     // HOME ENTRANCE (P1 - Red, P2 - Green, P3 - Yellow, P4 - Blue)
-
-    // P1 (Red - Bottom Left)
-    100: [7, 13],
-    101: [7, 12],
-    102: [7, 11],
-    103: [7, 10],
-    104: [7, 9],
-    105: [7, 8], // Home position
-
-    // P2 (Green - Top Right)
-    200: [7, 1],
-    201: [7, 2],
-    202: [7, 3],
-    203: [7, 4],
-    204: [7, 5],
-    205: [7, 6], // Home position
-
-    // P3 (Yellow - Top Left)
-    300: [1, 7],
-    301: [2, 7],
-    302: [3, 7],
-    303: [4, 7],
-    304: [5, 7],
-    305: [6, 7], // Home position
-
-    // P4 (Blue - Bottom Right)
-    400: [13, 7],
-    401: [12, 7],
-    402: [11, 7],
-    403: [10, 7],
-    404: [9, 7],
-    405: [8, 7], // Home position
-
-    // BASE POSITIONS
-
     // P1 (Bottom Left)
-    500: [1.5, 10.58],
-    501: [3.57, 10.58],
-    502: [1.5, 12.43],
-    503: [3.57, 12.43],
+    100: [7, 13], 101: [7, 12], 102: [7, 11], 103: [7, 10], 104: [7, 9], 105: [7, 8], // Home position
 
     // P2 (Top Right)
-    600: [10.5, 1.58],
-    601: [12.54, 1.58],
-    602: [10.5, 3.45],
-    603: [12.54, 3.45],
+    200: [7, 1], 201: [7, 2], 202: [7, 3], 203: [7, 4], 204: [7, 5], 205: [7, 6], // Home position
 
     // P3 (Top Left)
-    700: [1.5, 1.58],
-    701: [3.57, 1.58],
-    702: [1.5, 3.45],
-    703: [3.57, 3.45],
+    300: [1, 7], 301: [2, 7], 302: [3, 7], 303: [4, 7], 304: [5, 7], 305: [6, 7], // Home position
 
     // P4 (Bottom Right)
-    800: [10.5, 10.58],
-    801: [12.54, 10.58],
-    802: [10.5, 12.43],
-    803: [12.54, 12.43],
+    400: [13, 7], 401: [12, 7], 402: [11, 7], 403: [10, 7], 404: [9, 7], 405: [8, 7], // Home position
+
+    // BASE POSITIONS
+    // P1 (Bottom Left)
+    500: [1.5, 10.58], 501: [3.57, 10.58], 502: [1.5, 12.43], 503: [3.57, 12.43],
+
+    // P2 (Top Right)
+    600: [10.5, 1.58], 601: [12.54, 1.58], 602: [10.5, 3.45], 603: [12.54, 3.45],
+
+    // P3 (Top Left)
+    700: [1.5, 1.58], 701: [3.57, 1.58], 702: [1.5, 3.45], 703: [3.57, 3.45],
+
+    // P4 (Bottom Right)
+    800: [10.5, 10.58], 801: [12.54, 10.58], 802: [10.5, 12.43], 803: [12.54, 12.43],
 };
 
 export const STEP_LENGTH = 6.66;
 
-// FIX: Updated ALL_PLAYERS to follow a clockwise path on the board (BL -> BR -> TR -> TL)
+// Clockwise order for 4 players (BL, BR, TR, TL)
 export const ALL_PLAYERS = ['P1', 'P4', 'P2', 'P3']; 
-export let PLAYERS = ['P1', 'P2']; 
+export let PLAYERS = ['P1', 'P2']; // Default, overridden by Ludo.js logic
 
 export const BASE_POSITIONS = {
     P1: [500, 501, 502, 503],
@@ -163,5 +129,6 @@ export const STATE = {
 
 export function setPlayers(playersArray) {
     PLAYERS = playersArray;
+    // Note: Logging this will show the correct P1, P2 order for 2 players
     console.log('Active players set to:', PLAYERS);
 }
