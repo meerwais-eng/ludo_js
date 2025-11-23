@@ -25,30 +25,23 @@
 .player-piece {
     width: 3%;
     height: 3%;
-    /* Changed from 10px to 50% for perfect circle pawns */
     border: 2px solid;
-    border-radius: 50%; 
+    border-radius: 50%; /* Changed to 50% for a round piece */
     position: absolute;
     transform: translate(50%, 50%);
     transition: all .2s;
 
     z-index: 1;
 
-    /* NEW 3D PAWN EFFECT */
+    /* 3D PAWN EFFECT */
     box-shadow: 
-        inset 0 0 5px rgba(255, 255, 255, 0.8), /* Inner highlight (top left) */
-        inset 0 0 10px rgba(0, 0, 0, 0.6),    /* Inner shadow (depth) */
-        3px 3px 5px rgba(0, 0, 0, 0.4);       /* Outer shadow (lifting piece) */
+        inset 0 0 5px rgba(255, 255, 255, 0.8), 
+        inset 0 0 10px rgba(0, 0, 0, 0.6),    
+        3px 3px 5px rgba(0, 0, 0, 0.4);       
 }
-
 .player-piece.highlight {
     cursor: pointer;
     border: 2px dashed;
-    /* Deeper shadow when highlighted */
-    box-shadow: 
-        inset 0 0 5px rgba(255, 255, 255, 0.8),
-        inset 0 0 10px rgba(0, 0, 0, 0.6),
-        5px 5px 15px rgba(0, 0, 0, 0.6); 
     animation: spin 1s infinite linear;
 }
 @keyframes spin {
@@ -63,20 +56,26 @@
     }
 }
 
+/* Player Colors */
+
+/* P1 (Blue) */
 [player-id="P1"].player-piece {
-    background-color: #2eafff; /* Red/Blue */
+    background-color: #2eafff; 
 }
 
+/* P2 (Green) */
 [player-id="P2"].player-piece {
-    background-color: #00b550; /* Green */
+    background-color: #00b550; 
 }
 
+/* P3 (Yellow/Orange) */
 [player-id="P3"].player-piece {
-    background-color: #ffc900; /* Yellow/Orange */
+    background-color: #ffc900; 
 }
 
+/* P4 (Red/Bottom-Right) */
 [player-id="P4"].player-piece {
-    background-color: #f44336; /* Blue/Purple */
+    background-color: #e70a0a; 
 }
 
 
@@ -87,10 +86,12 @@
     position: absolute;
 }
 
+/* Base Colors */
+
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7; /* Red/Blue Base */
+    border-color: #1295e7; /* Blue Base */
 }
 
 .player-bases [player-id="P2"].player-base {
@@ -99,16 +100,18 @@
     border-color: #049645; /* Green Base */
 }
 
+/* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
     border-color: #e7a712; /* Yellow Base */
 }
 
+/* NEW: P4 base in Bottom Right */
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; /* Blue/Purple Base */
+    border-color: #e70a0a; /* Red Base */
 }
 
 
@@ -118,73 +121,184 @@
 
 @keyframes border-blink {
     50% {
-        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
+        opacity: 0.8;
     }
 }
 
+
+/* ------------------------------------------- */
+/* FOOTER/CONTROLS                             */
+/* ------------------------------------------- */
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.footer .row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 .btn {
-    /* Existing button styles */
-    padding: 8px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn:disabled {
-    opacity: 0.5;
-}
-
-/* DICE BUTTON ENHANCEMENT */
-#dice-btn {
     padding: 10px 20px;
-    font-size: 1.2em;
+    font-size: 16px;
     border: none;
-    border-radius: 12px;
-    background-color: #009d60; /* Green color for dice button */
-    color: white;
-    font-weight: bold;
-    
-    /* NEW 3D/NEUMORPHISM EFFECT */
-    box-shadow: 
-        5px 5px 10px rgba(0, 0, 0, 0.4),  /* Dark outer shadow (depth) */
-        -5px -5px 10px rgba(255, 255, 255, 0.2), /* Light outer shadow (lift) */
-        inset 0 0 5px rgba(0, 0, 0, 0.1); /* Inner shadow for slight texture */
-    transition: all 0.1s ease;
-    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-#dice-btn:active {
-    /* Pressed state */
-    transform: scale(0.98);
-    box-shadow: 
-        2px 2px 5px rgba(0, 0, 0, 0.4),  /* Smaller dark outer shadow */
-        -2px -2px 5px rgba(255, 255, 255, 0.2), /* Smaller light outer shadow */
-        inset 5px 5px 10px rgba(0, 0, 0, 0.2); /* Deep inner shadow for "pressed" look */
+.btn-dice {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-dice:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 .btn-reset {
-    background-color: #f44336;
+    background-color: #00bcd4;
     color: white;
-    border-radius: 4px;
-}
-
-.row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Align items vertically */
-    margin-top: 15px;
 }
 
 .dice-value {
     font-size: 24px;
     font-weight: bold;
-    /* Center text vertically */
-    line-height: 1.2;
+}
+
+.active-player {
+    font-size: 18px;
+}
+
+.active-player span {
+    font-weight: bold;
+    color: #f44336;
 }
 
 .player-select {
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
+
+/* ------------------------------------------- */
+/* 3D Dice Styling */
+/* ------------------------------------------- */
+
+.dice-container {
+    perspective: 500px;
+    width: 40px;
+    height: 40px;
+}
+
+.dice {
+    width: 40px;
+    height: 40px;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    position: relative;
+}
+
+.face {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #333;
+    background-color: #fff;
+    display: grid;
+    grid-template-areas:
+        "a . c"
+        "e d f"
+        "g . b";
+    padding: 5px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #333;
+    border-radius: 50%;
+    display: none;
+}
+
+.front { transform: translateZ(20px); }
+.back { transform: rotateX(180deg) translateZ(20px); }
+.right { transform: rotateY(90deg) translateZ(20px); }
+.left { transform: rotateY(-90deg) translateZ(20px); }
+.top { transform: rotateX(90deg) translateZ(20px); }
+.bottom { transform: rotateX(-90deg) translateZ(20px); }
+
+
+/* ------------------------------------------------------------- */
+/* DICE FACE STYLING                                             */
+/* ------------------------------------------------------------- */
+
+/* Roll 1: Face 1 (Front) must show 1 dot */
+.face:nth-child(1) .dot:nth-child(1) { grid-area: d; }
+.face-1 { transform: rotateX(0deg) rotateY(0deg); }
+.face-1 .face:nth-child(1) .dot:nth-child(1) { display: block; }
+
+
+/* Roll 2: Face 3 (Right) must show 2 dots */
+.face:nth-child(3) .dot:nth-child(1) { grid-area: a; }
+.face:nth-child(3) .dot:nth-child(2) { grid-area: b; }
+.face-2 { transform: rotateY(-90deg); }
+.face-2 .face:nth-child(3) .dot:nth-child(1) { display: block; }
+.face-2 .face:nth-child(3) .dot:nth-child(2) { display: block; }
+
+
+/* Roll 3: Face 6 (Bottom) must show 3 dots */
+.face:nth-child(6) .dot:nth-child(1) { grid-area: a; }
+.face:nth-child(6) .dot:nth-child(2) { grid-area: d; }
+.face:nth-child(6) .dot:nth-child(3) { grid-area: b; }
+.face-3 { transform: rotateX(-90deg); }
+.face-3 .face:nth-child(6) .dot:nth-child(1) { display: block; }
+.face-3 .face:nth-child(6) .dot:nth-child(2) { display: block; }
+.face-3 .face:nth-child(6) .dot:nth-child(3) { display: block; }
+
+/* Roll 4: Face 4 (Left) must show 4 dots */
+.face:nth-child(4) .dot:nth-child(1) { grid-area: a; } 
+.face:nth-child(4) .dot:nth-child(2) { grid-area: c; } 
+.face:nth-child(4) .dot:nth-child(3) { grid-area: g; } 
+.face:nth-child(4) .dot:nth-child(4) { grid-area: b; }
+.face-4 { transform: rotateY(90deg); }
+.face-4 .face:nth-child(4) .dot:nth-child(1) { display: block; } 
+.face-4 .face:nth-child(4) .dot:nth-child(2) { display: block; } 
+.face-4 .face:nth-child(4) .dot:nth-child(3) { display: block; } 
+.face-4 .face:nth-child(4) .dot:nth-child(4) { display: block; } 
+
+/* Roll 5: Face 5 (Top) must show 5 dots */
+.face:nth-child(5) .dot:nth-child(1) { grid-area: a; } 
+.face:nth-child(5) .dot:nth-child(2) { grid-area: c; } 
+.face:nth-child(5) .dot:nth-child(3) { grid-area: g; } 
+.face:nth-child(5) .dot:nth-child(4) { grid-area: b; } 
+.face:nth-child(5) .dot:nth-child(5) { grid-area: d; } 
+.face-5 { transform: rotateX(90deg); }
+.face-5 .face:nth-child(5) .dot:nth-child(1) { display: block; } 
+.face-5 .face:nth-child(5) .dot:nth-child(2) { display: block; } 
+.face-5 .face:nth-child(5) .dot:nth-child(3) { display: block; } 
+.face-5 .face:nth-child(5) .dot:nth-child(4) { display: block; } 
+.face-5 .face:nth-child(5) .dot:nth-child(5) { display: block; } 
+
+
+/* Roll 6: Face 2 (Back) must show 6 dots */
+.face:nth-child(2) .dot:nth-child(1) { grid-area: a; } 
+.face:nth-child(2) .dot:nth-child(2) { grid-area: c; } 
+.face:nth-child(2) .dot:nth-child(3) { grid-area: e; } 
+.face:nth-child(2) .dot:nth-child(4) { grid-area: f; } 
+.face:nth-child(2) .dot:nth-child(5) { grid-area: g; } 
+.face:nth-child(2) .dot:nth-child(6) { grid-area: b; }
+.face-6 { transform: rotateX(180deg); }
+.face-6 .face:nth-child(2) .dot:nth-child(1) { display: block; } 
+.face-6 .face:nth-child(2) .dot:nth-child(2) { display: block; } 
+.face-6 .face:nth-child(2) .dot:nth-child(3) { display: block; } 
+.face-6 .face:nth-child(2) .dot:nth-child(4) { display: block; } 
+.face-6 .face:nth-child(2) .dot:nth-child(5) { display: block; } 
+.face-6 .face:nth-child(2) .dot:nth-child(6) { display: block; }
