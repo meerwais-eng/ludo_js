@@ -238,56 +238,51 @@
 .top    { transform: rotateX(90deg) translateZ(20px); }
 .bottom { transform: rotateX(-90deg) translateZ(20px); }
 
-/* --- Dot Layouts --- 
-Note: Each face should be populated with 6 dots in HTML for this CSS structure to work properly. 
-The CSS handles which dots are visible and where they are placed using grid-area.
-The provided HTML structure already includes the 6 face divs for this.
-*/
+/* --- Dot Layouts (The numbers) --- */
 
-/* 1 (The front face in the base state) */
-.face:nth-child(1) .dot:nth-child(2), .face:nth-child(1) .dot:nth-child(3), .face:nth-child(1) .dot:nth-child(4), .face:nth-child(1) .dot:nth-child(5), .face:nth-child(1) .dot:nth-child(6) { display: none; }
-.face:nth-child(1) .dot:nth-child(1) { grid-area: g; } 
-
-/* 2 */
-.face:nth-child(2) .dot:nth-child(3), .face:nth-child(2) .dot:nth-child(4), .face:nth-child(2) .dot:nth-child(5), .face:nth-child(2) .dot:nth-child(6) { display: none; }
-.face:nth-child(2) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(2) .dot:nth-child(2) { grid-area: b; } 
-
-/* 3 */
-.face:nth-child(3) .dot:nth-child(4), .face:nth-child(3) .dot:nth-child(5), .face:nth-child(3) .dot:nth-child(6) { display: none; }
-.face:nth-child(3) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(3) .dot:nth-child(2) { grid-area: g; } 
-.face:nth-child(3) .dot:nth-child(3) { grid-area: b; } 
-
-/* 4 */
-.face:nth-child(4) .dot:nth-child(5), .face:nth-child(4) .dot:nth-child(6) { display: none; }
-.face:nth-child(4) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(4) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(4) .dot:nth-child(3) { grid-area: d; } 
-.face:nth-child(4) .dot:nth-child(4) { grid-area: b; } 
-
-/* 5 */
-.face:nth-child(5) .dot:nth-child(6) { display: none; }
-.face:nth-child(5) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(5) .dot:nth-child(3) { grid-area: g; } 
-.face:nth-child(5) .dot:nth-child(4) { grid-area: d; } 
-.face:nth-child(5) .dot:nth-child(5) { grid-area: b; } 
-
-/* 6 */
-.face:nth-child(6) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(6) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(6) .dot:nth-child(3) { grid-area: e; } 
-.face:nth-child(6) .dot:nth-child(4) { grid-area: f; } 
-.face:nth-child(6) .dot:nth-child(5) { grid-area: d; } 
-.face:nth-child(6) .dot:nth-child(6) { grid-area: b; } 
-
-/* Injecting Dots (Using a generic dot element for each face for simplicity) */
-.face > div {
-    display: block; /* The HTML structure uses 6 empty divs inside each face to represent the dots */
+/* Initially, hide all dots */
+.face .dot {
+    display: none; 
 }
 
+/* 1 */
+.face:nth-child(1) .dot:nth-child(1) { 
+    display: block; 
+    grid-area: g; 
+} /* Center dot */
+
+/* 2 */
+.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
+.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: b; } /* Bottom-Right */
+
+/* 3 */
+.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
+.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: g; } /* Center */
+.face:nth-child(3) .dot:nth-child(3) { display: block; grid-area: b; } /* Bottom-Right */
+
+/* 4 */
+.face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: d; } 
+.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: b; } 
+
+/* 5 */
+.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: g; } 
+.face:nth-child(5) .dot:nth-child(4) { display: block; grid-area: d; } 
+.face:nth-child(5) .dot:nth-child(5) { display: block; grid-area: b; } 
+
+/* 6 */
+.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: e; } 
+.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: f; } 
+.face:nth-child(6) .dot:nth-child(5) { display: block; grid-area: d; } 
+.face:nth-child(6) .dot:nth-child(6) { display: block; grid-area: b; } 
+
 /* --- Rotations to Show the Rolled Value --- */
+/* (Keep these rotations as they were) */
 .face-1 { transform: rotateX(0deg) rotateY(0deg); } 
 .face-2 { transform: rotateY(-90deg); } 
 .face-3 { transform: rotateX(90deg); } 
