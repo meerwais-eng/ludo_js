@@ -58,11 +58,23 @@ export class Ludo {
         });
     }
 
+    // FIX: Conditional logic added here
     updatePlayerCount(count) {
         const playerCount = parseInt(count, 10);
+        let activePlayers;
         
-        const activePlayers = ALL_PLAYERS.slice(0, playerCount);
-        setPlayers(activePlayers); 
+        if (playerCount === 2) {
+            // Correct for 2 players: P1 (Bottom-Left) and P2 (Top-Right) are opposite.
+            activePlayers = ['P1', 'P2']; 
+        } else if (playerCount === 3) {
+            // Uses P1, P4, P2 to maintain circular geographical turns for three players.
+            activePlayers = ['P1', 'P4', 'P2']; 
+        } else { 
+            // 4 players: P1, P4, P2, P3 (Clockwise order around the board)
+            activePlayers = ALL_PLAYERS; 
+        }
+        
+        setPlayers(activePlayers);
         
         UI.setGameVisibility(activePlayers);
     }
