@@ -57,12 +57,12 @@
     background-color: #2eafff; /* Red/Blue */
 }
 
-[player-id="P3"].player-piece {
+[player-id="P2"].player-piece {
     background-color: #00b550; /* Green */
 }
 
 /* NEW: P3 (Yellow/Orange) */
-[player-id="P2"].player-piece {
+[player-id="P3"].player-piece {
     background-color: #ffc900; 
 }
 
