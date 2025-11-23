@@ -54,7 +54,7 @@ export const COORDINATES_MAP = {
 
     // HOME ENTRANCE (P1 - Red, P2 - Green, P3 - Yellow, P4 - Blue)
 
-    // P1
+    // P1 (Red - Bottom Left)
     100: [7, 13],
     101: [7, 12],
     102: [7, 11],
@@ -62,7 +62,7 @@ export const COORDINATES_MAP = {
     104: [7, 9],
     105: [7, 8], // Home position
 
-    // P2
+    // P2 (Green - Top Right)
     200: [7, 1],
     201: [7, 2],
     202: [7, 3],
@@ -70,7 +70,7 @@ export const COORDINATES_MAP = {
     204: [7, 5],
     205: [7, 6], // Home position
 
-    // P3 (Yellow - Home entrance from 11)
+    // P3 (Yellow - Top Left)
     300: [1, 7],
     301: [2, 7],
     302: [3, 7],
@@ -78,7 +78,7 @@ export const COORDINATES_MAP = {
     304: [5, 7],
     305: [6, 7], // Home position
 
-    // P4 (Blue - Home entrance from 37)
+    // P4 (Blue - Bottom Right)
     400: [13, 7],
     401: [12, 7],
     402: [11, 7],
@@ -123,36 +123,36 @@ export let PLAYERS = ['P1', 'P2'];
 export const BASE_POSITIONS = {
     P1: [500, 501, 502, 503],
     P2: [600, 601, 602, 603],
-    P3: [700, 701, 702, 703], // NEW
-    P4: [800, 801, 802, 803], // NEW
+    P3: [700, 701, 702, 703], 
+    P4: [800, 801, 802, 803], 
 }
 
 export const START_POSITIONS = {
     P1: 0,
     P2: 26,
-    P3: 13, // NEW
-    P4: 39, // NEW
+    P3: 13, 
+    P4: 39, 
 }
 
 export const HOME_ENTRANCE = {
     P1: [100, 101, 102, 103, 104],
     P2: [200, 201, 202, 203, 204],
-    P3: [300, 301, 302, 303, 304], // NEW
-    P4: [400, 401, 402, 403, 404], // NEW
+    P3: [300, 301, 302, 303, 304], 
+    P4: [400, 401, 402, 403, 404], 
 }
 
 export const HOME_POSITIONS = {
     P1: 105,
     P2: 205,
-    P3: 305, // NEW
-    P4: 405, // NEW
+    P3: 305, 
+    P4: 405, 
 }
 
 export const TURNING_POINTS = {
     P1: 50,
     P2: 24,
-    P3: 11, // NEW
-    P4: 37, // NEW
+    P3: 11, 
+    P4: 37, 
 }
 
 export const SAFE_POSITIONS = [0, 8, 13, 21, 26, 34, 39, 47];

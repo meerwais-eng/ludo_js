@@ -54,11 +54,11 @@
 }
 
 [player-id="P1"].player-piece {
-    background-color: #2eafff; /* Red/Blue in old version, keeping old P1 color */
+    background-color: #2eafff; /* Red/Blue */
 }
 
 [player-id="P2"].player-piece {
-    background-color: #00b550; /* Green in old version, keeping old P2 color */
+    background-color: #00b550; /* Green */
 }
 
 /* NEW: P3 (Yellow/Orange) */
@@ -82,27 +82,27 @@
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7;
+    border-color: #1295e7; /* Red/Blue Base */
 }
 
 .player-bases [player-id="P2"].player-base {
     top: 0;
-    left: 0;
-    border-color: #049645;
+    right: 0;
+    border-color: #049645; /* Green Base */
 }
 
 /* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
-    right: 0;
-    border-color: #e7a712;
+    left: 0;
+    border-color: #e7a712; /* Yellow Base */
 }
 
 /* NEW: P4 base in Bottom Right */
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a;
+    border-color: #e70a0a; /* Blue/Purple Base */
 }
 
 

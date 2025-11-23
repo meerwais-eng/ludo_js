@@ -20,8 +20,6 @@ export class Ludo {
     }
     set turn(value) {
         this._turn = value;
-        // The UI now uses the dynamic PLAYERS array from the constants module
-        // We use window.PLAYERS as a fallback to ensure access to the dynamic array
         UI.setTurn(value); 
     }
 
@@ -46,15 +44,13 @@ export class Ludo {
         this.listenDiceClick();
         this.listenResetClick();
         this.listenPieceClick();
-        this.listenPlayerCountChange(); // NEW: Listen for selector change
+        this.listenPlayerCountChange(); 
 
-        // Initialize with the value from the new selector, default to 4 if the selector is missing (robustness)
         const initialCount = document.querySelector('#player-count')?.value || '4';
         this.updatePlayerCount(initialCount);
         this.resetGame();
     }
     
-    // NEW: Handle player count change
     listenPlayerCountChange() {
         UI.listenPlayerCountChange((event) => {
             this.updatePlayerCount(event.target.value);
@@ -66,7 +62,7 @@ export class Ludo {
         const playerCount = parseInt(count, 10);
         
         const activePlayers = ALL_PLAYERS.slice(0, playerCount);
-        setPlayers(activePlayers); // Update the global PLAYERS constant
+        setPlayers(activePlayers); 
         
         UI.setGameVisibility(activePlayers);
     }
@@ -84,7 +80,7 @@ export class Ludo {
     }
 
     checkForEligiblePieces() {
-        const player = PLAYERS[this.turn]; // Use dynamic PLAYERS array
+        const player = PLAYERS[this.turn]; 
         const eligiblePieces = this.getEligiblePieces(player);
         if(eligiblePieces.length) {
             UI.highlightPieces(player, eligiblePieces);
@@ -94,7 +90,6 @@ export class Ludo {
     }
 
     incrementTurn() {
-        // Use modulo operation based on active PLAYERS length
         this.turn = (this.turn + 1) % PLAYERS.length; 
         this.state = STATE.DICE_NOT_ROLLED;
     }
@@ -132,13 +127,11 @@ export class Ludo {
     resetGame() {
         console.log('reset game');
         
-        // Initialize currentPositions only for active players
         this.currentPositions = {}; 
         PLAYERS.forEach(player => {
             this.currentPositions[player] = structuredClone(BASE_POSITIONS[player]);
         });
 
-        // Place all active players' pieces to their starting base positions
         PLAYERS.forEach(player => {
             [0, 1, 2, 3].forEach(piece => {
                 this.setPiecePosition(player, piece, this.currentPositions[player][piece])
@@ -159,7 +152,6 @@ export class Ludo {
         if(!target.classList.contains('player-piece') || !target.classList.contains('highlight')) {
             return;
         }
-        console.log('piece clicked')
 
         const player = target.getAttribute('player-id');
         const piece = target.getAttribute('piece');
@@ -173,7 +165,6 @@ export class Ludo {
     }
 
     handlePieceClick(player, piece) {
-        console.log(player, piece);
         const currentPosition = this.currentPositions[player][piece];
         
         if(BASE_POSITIONS[player].includes(currentPosition) && this.diceValue === 6) {
@@ -222,7 +213,6 @@ export class Ludo {
         const currentPosition = this.currentPositions[player][piece];
         let kill = false;
 
-        // Iterate over all active opponents
         const opponents = PLAYERS.filter(p => p !== player);
 
         opponents.forEach(opponent => {
