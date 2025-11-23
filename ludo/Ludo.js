@@ -1,11 +1,9 @@
-import { BASE_POSITIONS, HOME_ENTRANCE, HOME_POSITIONS, PLAYERS, SAFE_POSITIONS, START_POSITIONS, STATE, TURNING_POINTS } from './constants.js';
+import { BASE_POSITIONS, HOME_ENTRANCE, HOME_POSITIONS, PLAYERS, SAFE_POSITIONS, START_POSITIONS, STATE, TURNING_POINTS, ALL_PLAYERS, setPlayers } from './constants.js';
 import { UI } from './UI.js';
 
 export class Ludo {
-    currentPositions = {
-        P1: [],
-        P2: []
-    }
+    // Current positions now dynamically sized based on active players
+    currentPositions = {}; 
 
     _diceValue;
     get diceValue() {
@@ -23,7 +21,8 @@ export class Ludo {
     }
     set turn(value) {
         this._turn = value;
-        UI.setTurn(value);
+        // The UI now dynamically figures out the player based on the active PLAYERS array
+        UI.setTurn(value); 
     }
 
     _state;
@@ -44,19 +43,31 @@ export class Ludo {
     constructor() {
         console.log('Hello World! Lets play Ludo!');
 
-        // this.diceValue = 4;
-        // this.turn = 0;
-        // this.state = STATE.DICE_ROLLED;
         this.listenDiceClick();
         this.listenResetClick();
         this.listenPieceClick();
+        this.listenPlayerCountChange(); // NEW: Listen for selector change
 
-        this.resetGame();
-        // this.setPiecePosition('P1', 0, 0);
-        // this.setPiecePosition('P2', 0, 1);
-        // this.diceValue = 6;
-        // console.log(this.getEligiblePieces('P1'))
+        this.updatePlayerCount(document.querySelector('#player-count').value);
+    }
+    
+    // NEW: Handle player count change
+    listenPlayerCountChange() {
+        UI.listenPlayerCountChange((event) => {
+            this.updatePlayerCount(event.target.value);
+            this.resetGame();
+        });
+    }
+
+    updatePlayerCount(count) {
+        const playerCount = parseInt(count, 10);
         
+        // Select the first 'count' players from the ALL_PLAYERS list
+        const activePlayers = ALL_PLAYERS.slice(0, playerCount);
+        setPlayers(activePlayers); // Update the global PLAYERS constant
+        
+        // Update UI visibility
+        UI.setGameVisibility(activePlayers);
     }
 
     listenDiceClick() {
@@ -72,7 +83,7 @@ export class Ludo {
     }
 
     checkForEligiblePieces() {
-        const player = PLAYERS[this.turn];
+        const player = PLAYERS[this.turn]; // Use dynamic PLAYERS array
         // eligible pieces of given player
         const eligiblePieces = this.getEligiblePieces(player);
         if(eligiblePieces.length) {
@@ -84,7 +95,8 @@ export class Ludo {
     }
 
     incrementTurn() {
-        this.turn = this.turn === 0 ? 1 : 0;
+        // UPDATED: Use modulo operation based on active PLAYERS length
+        this.turn = (this.turn + 1) % PLAYERS.length; 
         this.state = STATE.DICE_NOT_ROLLED;
     }
 
@@ -103,6 +115,7 @@ export class Ludo {
                 return false;
             }
 
+            // Check if move exceeds home target
             if(
                 HOME_ENTRANCE[player].includes(currentPosition)
                 && this.diceValue > HOME_POSITIONS[player] - currentPosition
@@ -120,8 +133,14 @@ export class Ludo {
 
     resetGame() {
         console.log('reset game');
-        this.currentPositions = structuredClone(BASE_POSITIONS);
+        
+        // Initialize currentPositions only for active players
+        this.currentPositions = {}; 
+        PLAYERS.forEach(player => {
+            this.currentPositions[player] = structuredClone(BASE_POSITIONS[player]);
+        });
 
+        // Place all active players' pieces to their starting base positions
         PLAYERS.forEach(player => {
             [0, 1, 2, 3].forEach(piece => {
                 this.setPiecePosition(player, piece, this.currentPositions[player][piece])
@@ -146,6 +165,13 @@ export class Ludo {
 
         const player = target.getAttribute('player-id');
         const piece = target.getAttribute('piece');
+        
+        // NEW: Ensure the clicked piece belongs to the active player
+        if(player !== PLAYERS[this.turn]) {
+            console.error('Not the active player\'s piece!');
+            return;
+        }
+        
         this.handlePieceClick(player, piece);
     }
 
@@ -153,7 +179,7 @@ export class Ludo {
         console.log(player, piece);
         const currentPosition = this.currentPositions[player][piece];
         
-        if(BASE_POSITIONS[player].includes(currentPosition)) {
+        if(BASE_POSITIONS[player].includes(currentPosition) && this.diceValue === 6) {
             this.setPiecePosition(player, piece, START_POSITIONS[player]);
             this.state = STATE.DICE_NOT_ROLLED;
             return;
@@ -164,12 +190,13 @@ export class Ludo {
     }
 
     setPiecePosition(player, piece, newPosition) {
+        // Ensure piece is treated as a number
+        piece = parseInt(piece, 10);
         this.currentPositions[player][piece] = newPosition;
         UI.setPiecePosition(player, piece, newPosition)
     }
 
     movePiece(player, piece, moveBy) {
-        // this.setPiecePosition(player, piece, this.currentPositions[player][piece] + moveBy)
         const interval = setInterval(() => {
             this.incrementPiecePosition(player, piece);
             moveBy--;
@@ -177,7 +204,7 @@ export class Ludo {
             if(moveBy === 0) {
                 clearInterval(interval);
 
-                // check if player won
+                // Check if player won
                 if(this.hasPlayerWon(player)) {
                     alert(`Player: ${player} has won!`);
                     this.resetGame();
@@ -198,17 +225,20 @@ export class Ludo {
 
     checkForKill(player, piece) {
         const currentPosition = this.currentPositions[player][piece];
-        const opponent = player === 'P1' ? 'P2' : 'P1';
-
         let kill = false;
 
-        [0, 1, 2, 3].forEach(piece => {
-            const opponentPosition = this.currentPositions[opponent][piece];
+        // UPDATED: Iterate over all active opponents, not just 'P1'/'P2'
+        const opponents = PLAYERS.filter(p => p !== player);
 
-            if(currentPosition === opponentPosition && !SAFE_POSITIONS.includes(currentPosition)) {
-                this.setPiecePosition(opponent, piece, BASE_POSITIONS[opponent][piece]);
-                kill = true
-            }
+        opponents.forEach(opponent => {
+            [0, 1, 2, 3].forEach(opponentPiece => {
+                const opponentPosition = this.currentPositions[opponent][opponentPiece];
+
+                if(currentPosition === opponentPosition && !SAFE_POSITIONS.includes(currentPosition)) {
+                    this.setPiecePosition(opponent, opponentPiece, BASE_POSITIONS[opponent][opponentPiece]);
+                    kill = true;
+                }
+            })
         });
 
         return kill
@@ -225,12 +255,23 @@ export class Ludo {
     getIncrementedPosition(player, piece) {
         const currentPosition = this.currentPositions[player][piece];
 
+        // Check if piece is in the common path or its own home entrance path
+        if(currentPosition >= HOME_ENTRANCE[player][0] && currentPosition < HOME_POSITIONS[player]) {
+            return currentPosition + 1; // Already in the home entrance path
+        }
+        
+        // Common path turning point logic
         if(currentPosition === TURNING_POINTS[player]) {
             return HOME_ENTRANCE[player][0];
         }
-        else if(currentPosition === 51) {
+        
+        // Wrapping around the board (from 51 to 0)
+        // This only happens for P1 as P1 has start point 0 and 51 is the end of the loop
+        if(currentPosition === 51 && player === 'P1') {
             return 0;
-        }
+        } 
+        
+        // This logic handles all other pieces moving forward on the common path (0-51)
         return currentPosition + 1;
     }
 }

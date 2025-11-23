@@ -52,66 +52,107 @@ export const COORDINATES_MAP = {
     50: [7, 14],
     51: [6, 14],
 
-    // HOME ENTRANCE
+    // HOME ENTRANCE (P1 - Red, P2 - Green, P3 - Yellow, P4 - Blue)
 
-    // P1
+    // P1 (Red - from 51)
     100: [7, 13],
     101: [7, 12],
     102: [7, 11],
     103: [7, 10],
     104: [7, 9],
-    105: [7, 8],
+    105: [7, 8], // Home position
 
-    // P2
+    // P2 (Green - from 12)
     200: [7, 1],
     201: [7, 2],
     202: [7, 3],
     203: [7, 4],
     204: [7, 5],
-    205: [7, 6],
+    205: [7, 6], // Home position
+
+    // P3 (Yellow - from 25)
+    300: [1, 7],
+    301: [2, 7],
+    302: [3, 7],
+    303: [4, 7],
+    304: [5, 7],
+    305: [6, 7], // Home position
+
+    // P4 (Blue - from 38)
+    400: [13, 7],
+    401: [12, 7],
+    402: [11, 7],
+    403: [10, 7],
+    404: [9, 7],
+    405: [8, 7], // Home position
 
     // BASE POSITIONS
 
-    // P1
+    // P1 (Red - Bottom Left)
     500: [1.5, 10.58],
     501: [3.57, 10.58],
     502: [1.5, 12.43],
     503: [3.57, 12.43],
 
-    // P2
-    600: [10.5, 1.58],
-    601: [12.54, 1.58],
-    602: [10.5, 3.45],
-    603: [12.54, 3.45],
+    // P2 (Green - Top Left)
+    600: [1.5, 1.58],
+    601: [3.57, 1.58],
+    602: [1.5, 3.45],
+    603: [3.57, 3.45],
+
+    // P3 (Yellow - Top Right)
+    700: [10.5, 1.58],
+    701: [12.54, 1.58],
+    702: [10.5, 3.45],
+    703: [12.54, 3.45],
+
+    // P4 (Blue - Bottom Right)
+    800: [10.5, 10.58],
+    801: [12.54, 10.58],
+    802: [10.5, 12.43],
+    803: [12.54, 12.43],
 };
 
 export const STEP_LENGTH = 6.66;
 
-export const PLAYERS = ['P1', 'P2'];
+// UPDATED: Now includes all four players
+export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
+// Initial game state will use these, but Ludo.js will filter based on selection
+export let PLAYERS = ['P1', 'P2']; 
 
 export const BASE_POSITIONS = {
     P1: [500, 501, 502, 503],
     P2: [600, 601, 602, 603],
+    P3: [700, 701, 702, 703], // NEW
+    P4: [800, 801, 802, 803], // NEW
 }
 
 export const START_POSITIONS = {
     P1: 0,
-    P2: 26
+    P2: 26,
+    P3: 13, // NEW
+    P4: 39, // NEW
 }
 
 export const HOME_ENTRANCE = {
     P1: [100, 101, 102, 103, 104],
-    P2: [200, 201, 202, 203, 204]
+    P2: [200, 201, 202, 203, 204],
+    P3: [300, 301, 302, 303, 304], // NEW
+    P4: [400, 401, 402, 403, 404], // NEW
 }
 
 export const HOME_POSITIONS = {
     P1: 105,
-    P2: 205
+    P2: 205,
+    P3: 305, // NEW
+    P4: 405, // NEW
 }
 
 export const TURNING_POINTS = {
     P1: 50,
-    P2: 24
+    P2: 24,
+    P3: 11, // NEW
+    P4: 37, // NEW
 }
 
 export const SAFE_POSITIONS = [0, 8, 13, 21, 26, 34, 39, 47];
@@ -119,4 +160,9 @@ export const SAFE_POSITIONS = [0, 8, 13, 21, 26, 34, 39, 47];
 export const STATE = {
     DICE_NOT_ROLLED: 'DICE_NOT_ROLLED',
     DICE_ROLLED: 'DICE_ROLLED',
+}
+
+// NEW: Function to set the active players
+export function setPlayers(playersArray) {
+    PLAYERS = playersArray;
 }
