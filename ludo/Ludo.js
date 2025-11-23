@@ -60,12 +60,21 @@ export class Ludo {
         });
     }
 
-    updatePlayerCount(count) {
-        setPlayers(count);
-        this.isTeamMode = count === 4;
-        UI.setGameVisibility(PLAYERS);
-    }
-
+   updatePlayerCount(countString) {
+    const playerCount = parseInt(countString);
+    // Logic to set the team mode flag based on the select value
+    this.isTeamMode = (countString === '4-team'); 
+    
+    // If it's 4-player team or 4-player individual, set 4 active players.
+    const playersToSet = (this.isTeamMode || playerCount === 4) ? 4 : playerCount;
+    
+    // setPlayers() is from constants.js and handles the PLAYERS array
+    setPlayers(playersToSet); 
+    
+    // UI update and game reset
+    UI.setGameVisibility(PLAYERS);
+    this.resetGame();
+}
     resetGame() {
         PLAYERS.forEach(player => {
             this.currentPositions[player] = BASE_POSITIONS[player].slice();
