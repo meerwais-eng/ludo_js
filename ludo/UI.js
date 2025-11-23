@@ -62,25 +62,43 @@ export class UI {
 
     static setTurn(index) {
         if(index < 0 || index >= PLAYERS.length) {
-            return; 
+            console.error('index out of bound!');
+            return;
         }
         
-        const player = PLAYERS[index];
+        const activePlayer = PLAYERS[index];
 
-        // Display player ID
-        document.querySelector('.active-player span').innerText = player;
-
-        // Un-highlight previous player's base
-        const activePlayerBase = document.querySelector('.player-base.highlight');
-        if(activePlayerBase) {
-            activePlayerBase.classList.remove('highlight');
-        }
+        // 1. Update text display
+        const activePlayerSpan = document.querySelector('.active-player span');
+        if (activePlayerSpan) activePlayerSpan.innerText = activePlayer;
         
-        // Highlight current player's base
-        const newActiveBase = document.querySelector(`[player-id="${player}"].player-base`);
-        if (newActiveBase) {
-            newActiveBase.classList.add('highlight')
-        }
+        // 2. Manage highlights/dimming for ALL player bases and pieces
+        ALL_PLAYERS.forEach(player => {
+            const baseElement = document.querySelector(`[player-id="${player}"].player-base`);
+            const pieces = playerPiecesElements[player]; 
+            
+            // Check if the player is part of the current game setup
+            const isPlayerActiveInGame = PLAYERS.includes(player);
+            
+            if (baseElement) {
+                // Control visibility (for 2, 3, or 4 player modes)
+                baseElement.style.display = isPlayerActiveInGame ? 'block' : 'none';
+
+                if (isPlayerActiveInGame) {
+                    if (player === activePlayer) {
+                        // ACTIVE PLAYER: Enable blinking on base, remove dimming class from base and pieces
+                        baseElement.classList.add('highlight'); // Existing blinking class
+                        baseElement.classList.remove('inactive-area');
+                        if (pieces) pieces.forEach(piece => piece.classList.remove('inactive-area'));
+                    } else {
+                        // INACTIVE PLAYER: Disable blinking, apply dimming class to base and pieces
+                        baseElement.classList.remove('highlight');
+                        baseElement.classList.add('inactive-area'); // New class for dimming
+                        if (pieces) pieces.forEach(piece => piece.classList.add('inactive-area'));
+                    }
+                }
+            }
+        });
     }
 
     static enableDice() {

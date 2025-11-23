@@ -26,14 +26,14 @@
     width: 3%;
     height: 3%;
     border: 2px solid;
-    border-radius: 50%; /* Changed to 50% for a round piece */
+    border-radius: 50%; /* Changed from 10px to 50% for a round piece/pawn look */
     position: absolute;
     transform: translate(50%, 50%);
     transition: all .2s;
 
     z-index: 1;
 
-    /* 3D PAWN EFFECT */
+    /* 3D PAWN EFFECT (Added for better visuals) */
     box-shadow: 
         inset 0 0 5px rgba(255, 255, 255, 0.8), 
         inset 0 0 10px rgba(0, 0, 0, 0.6),    
@@ -56,37 +56,33 @@
     }
 }
 
-/* Player Colors */
-
-/* P1 (Blue) */
+/* PLAYER PIECE COLORS */
 [player-id="P1"].player-piece {
-    background-color: #2eafff; 
+    background-color: #2eafff; /* Blue */
 }
 
-/* P2 (Green) */
 [player-id="P2"].player-piece {
-    background-color: #00b550; 
+    background-color: #ffc900; /* Yellow in new 4-player setup */
 }
 
-/* P3 (Yellow/Orange) */
+/* NEW: P3 (Red) */
 [player-id="P3"].player-piece {
-    background-color: #ffc900; 
-}
-
-/* P4 (Red/Bottom-Right) */
-[player-id="P4"].player-piece {
     background-color: #e70a0a; 
 }
 
+/* NEW: P4 (Green) */
+[player-id="P4"].player-piece {
+    background-color: #00b550; 
+}
 
+
+/* PLAYER BASE STYLES */
 .player-base {
     width: 40%;
     height: 40%;
     border: 30px solid;
     position: absolute;
 }
-
-/* Base Colors */
 
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
@@ -97,103 +93,42 @@
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #049645; /* Green Base */
+    border-color: #e7a712; /* Yellow Base */
 }
 
 /* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
-    border-color: #e7a712; /* Yellow Base */
+    border-color: #e70a0a; /* Red Base */
 }
 
 /* NEW: P4 base in Bottom Right */
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; /* Red Base */
+    border-color: #049645; /* Green Base */
 }
 
-
+/* BASE BLINKING/HIGHLIGHT FOR ACTIVE PLAYER */
 .player-base.highlight {
     animation: border-blink .7s infinite ease-in-out;
 }
 
 @keyframes border-blink {
     50% {
-        box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
-        opacity: 0.8;
+        opacity: 0.5;
     }
 }
 
 
-/* ------------------------------------------- */
-/* FOOTER/CONTROLS                             */
-/* ------------------------------------------- */
+/* ------------------------------------------------------------- */
+/* DICE STYLES (3D CUBE) - FIX FOR MISSING DICE */
+/* ------------------------------------------------------------- */
 
-.footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-}
-
-.footer .row {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-dice {
-    background-color: #f44336;
-    color: white;
-}
-
-.btn-dice:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.btn-reset {
-    background-color: #00bcd4;
-    color: white;
-}
-
-.dice-value {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.active-player {
-    font-size: 18px;
-}
-
-.active-player span {
-    font-weight: bold;
-    color: #f44336;
-}
-
-.player-select {
-    margin-bottom: 10px;
-}
-
-/* ------------------------------------------- */
-/* 3D Dice Styling */
-/* ------------------------------------------- */
-
+/* Container for the 3D space */
 .dice-container {
-    width: 50px; /* Adjust size as needed */
+    width: 50px; 
     height: 50px;
     margin: 0 auto;
     position: relative;
@@ -202,7 +137,7 @@
     cursor: pointer;
 }
 
-/* Style the 3D dice cube */
+/* The 3D cube itself */
 .dice {
     width: 100%;
     height: 100%;
@@ -211,10 +146,10 @@
     transform-style: preserve-3d;
     transition: transform 1s;
     /* Center the dice in the container */
-    transform: translateZ(-25px); /* half of dice size (50px) */
+    transform: translateZ(-25px); 
 }
 
-/* Style for all faces */
+/* Base style for all faces */
 .dice .face {
     position: absolute;
     width: 50px;
@@ -234,114 +169,172 @@
         "d . b";
 }
 
-/* Specific Face Rotations to form the cube */
+/* Face Rotations (assuming 50px dice size, translateZ(25px)) */
 
-.dice .face.front {
-    transform: rotateY(0deg) translateZ(25px);
-}
+.dice .face.front { transform: rotateY(0deg) translateZ(25px); }
+.dice .face.back { transform: rotateY(180deg) translateZ(25px); }
+.dice .face.right { transform: rotateY(90deg) translateZ(25px); }
+.dice .face.left { transform: rotateY(-90deg) translateZ(25px); }
+.dice .face.top { transform: rotateX(90deg) translateZ(25px); }
+.dice .face.bottom { transform: rotateX(-90deg) translateZ(25px); }
 
-.dice .face.back {
-    transform: rotateY(180deg) translateZ(25px);
-}
+/* Dice Roll Rotation Classes (used by UI.js to animate the roll) */
 
-.dice .face.right {
-    transform: rotateY(90deg) translateZ(25px);
-}
+/* Roll 1: Shows 1 (Front face) */
+.dice.face-1 { transform: translateZ(-25px) rotateX(0deg) rotateY(0deg); } 
+/* Roll 2: Shows 2 (Top face) */
+.dice.face-2 { transform: translateZ(-25px) rotateX(-90deg) rotateY(0deg); } 
+/* Roll 3: Shows 3 (Right face) */
+.dice.face-3 { transform: translateZ(-25px) rotateX(0deg) rotateY(-90deg); } 
+/* Roll 4: Shows 4 (Bottom face) */
+.dice.face-4 { transform: translateZ(-25px) rotateX(90deg) rotateY(0deg); } 
+/* Roll 5: Shows 5 (Left face) */
+.dice.face-5 { transform: translateZ(-25px) rotateX(0deg) rotateY(90deg); } 
+/* Roll 6: Shows 6 (Back face) */
+.dice.face-6 { transform: translateZ(-25px) rotateX(0deg) rotateY(180deg); } 
 
-.dice .face.left {
-    transform: rotateY(-90deg) translateZ(25px);
-}
-
-.dice .face.top {
-    transform: rotateX(90deg) translateZ(25px);
-}
-
-.dice .face.bottom {
-    transform: rotateX(-90deg) translateZ(25px);
-}
-
-/* Dot Style (should be present, but good to check) */
+/* Dot Style */
 .dice .face .dot {
     width: 10px;
     height: 10px;
     background-color: #333;
     border-radius: 50%;
-    display: none; /* Hide all by default, shown by specific face CSS */
+    /* Initially hide all dots */
+    display: none; 
     align-self: center;
     justify-self: center;
 }
 
-.front { transform: translateZ(20px); }
-.back { transform: rotateX(180deg) translateZ(20px); }
-.right { transform: rotateY(90deg) translateZ(20px); }
-.left { transform: rotateY(-90deg) translateZ(20px); }
-.top { transform: rotateX(90deg) translateZ(20px); }
-.bottom { transform: rotateX(-90deg) translateZ(20px); }
+/* ------------------------------------------------------------- */
+/* Dot Visibility for each face (Pips) */
+/* ------------------------------------------------------------- */
+
+/* NOTE: The faces are ordered: 1:front, 2:back, 3:right, 4:left, 5:top, 6:bottom */
+/* The dot positions use the grid areas: a . c | e g f | d . b */
+
+/* 1. Roll 1: Face 1 (Front) must show 1 dot (center) */
+.face:nth-child(1) .dot:nth-child(1) { display: block; grid-area: g; }
+
+/* 2. Roll 6: Face 2 (Back) must show 6 dots */
+.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(2) .dot:nth-child(3) { display: block; grid-area: e; } 
+.face:nth-child(2) .dot:nth-child(4) { display: block; grid-area: f; } 
+.face:nth-child(2) .dot:nth-child(5) { display: block; grid-area: d; } 
+.face:nth-child(2) .dot:nth-child(6) { display: block; grid-area: b; }
+
+/* 3. Roll 3: Face 3 (Right) must show 3 dots */
+.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: g; } 
+.face:nth-child(3) .dot:nth-child(3) { display: block; grid-area: b; } 
+
+/* 4. Roll 5: Face 4 (Left) must show 5 dots */
+.face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: g; } 
+.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: d; } 
+.face:nth-child(4) .dot:nth-child(5) { display: block; grid-area: b; } 
+
+/* 5. Roll 2: Face 5 (Top) must show 2 dots */
+.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: b; } 
+
+/* 6. Roll 4: Face 6 (Bottom) must show 4 dots */
+.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: d; } 
+.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: b; }
 
 
 /* ------------------------------------------------------------- */
-/* DICE FACE STYLING                                             */
+/* TURN INDICATION STYLES (Dimming and Blinking) - FIX FOR TURN VISIBILITY */
 /* ------------------------------------------------------------- */
 
-/* Roll 1: Face 1 (Front) must show 1 dot */
-.face:nth-child(1) .dot:nth-child(1) { grid-area: d; }
-.face-1 { transform: rotateX(0deg) rotateY(0deg); }
-.face-1 .face:nth-child(1) .dot:nth-child(1) { display: block; }
+/* This class dims the area for inactive players. */
+.player-base.inactive-area {
+    /* Apply reduced opacity and a smooth transition */
+    opacity: 0.4;
+    transition: opacity 0.3s ease-in-out;
+    animation: none !important; /* Stop blinking */
+}
 
+/* Also dim the pieces of the inactive player */
+[player-id].player-piece.inactive-area {
+    opacity: 0.4;
+    transition: opacity 0.3s ease-in-out;
+    /* Ensure the piece-specific animation is also removed if active player */
+    animation: none !important;
+}
 
-/* Roll 2: Face 3 (Right) must show 2 dots */
-.face:nth-child(3) .dot:nth-child(1) { grid-area: a; }
-.face:nth-child(3) .dot:nth-child(2) { grid-area: b; }
-.face-2 { transform: rotateY(-90deg); }
-.face-2 .face:nth-child(3) .dot:nth-child(1) { display: block; }
-.face-2 .face:nth-child(3) .dot:nth-child(2) { display: block; }
+/* Ensure the active player's base and pieces are fully visible (opacity 1) */
+.player-base:not(.inactive-area),
+[player-id].player-piece:not(.inactive-area) {
+    opacity: 1;
+}
 
+/* ------------------------------------------------------------- */
+/* FOOTER/CONTROLS STYLES (Existing) */
+/* ------------------------------------------------------------- */
+.footer {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
 
-/* Roll 3: Face 6 (Bottom) must show 3 dots */
-.face:nth-child(6) .dot:nth-child(1) { grid-area: a; }
-.face:nth-child(6) .dot:nth-child(2) { grid-area: d; }
-.face:nth-child(6) .dot:nth-child(3) { grid-area: b; }
-.face-3 { transform: rotateX(-90deg); }
-.face-3 .face:nth-child(6) .dot:nth-child(1) { display: block; }
-.face-3 .face:nth-child(6) .dot:nth-child(2) { display: block; }
-.face-3 .face:nth-child(6) .dot:nth-child(3) { display: block; }
+.footer .row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
 
-/* Roll 4: Face 4 (Left) must show 4 dots */
-.face:nth-child(4) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(4) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(4) .dot:nth-child(3) { grid-area: g; } 
-.face:nth-child(4) .dot:nth-child(4) { grid-area: b; }
-.face-4 { transform: rotateY(90deg); }
-.face-4 .face:nth-child(4) .dot:nth-child(1) { display: block; } 
-.face-4 .face:nth-child(4) .dot:nth-child(2) { display: block; } 
-.face-4 .face:nth-child(4) .dot:nth-child(3) { display: block; } 
-.face-4 .face:nth-child(4) .dot:nth-child(4) { display: block; } 
+.btn {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
 
-/* Roll 5: Face 5 (Top) must show 5 dots */
-.face:nth-child(5) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(5) .dot:nth-child(3) { grid-area: g; } 
-.face:nth-child(5) .dot:nth-child(4) { grid-area: b; } 
-.face:nth-child(5) .dot:nth-child(5) { grid-area: d; } 
-.face-5 { transform: rotateX(90deg); }
-.face-5 .face:nth-child(5) .dot:nth-child(1) { display: block; } 
-.face-5 .face:nth-child(5) .dot:nth-child(2) { display: block; } 
-.face-5 .face:nth-child(5) .dot:nth-child(3) { display: block; } 
-.face-5 .face:nth-child(5) .dot:nth-child(4) { display: block; } 
-.face-5 .face:nth-child(5) .dot:nth-child(5) { display: block; } 
+.btn-dice {
+    background-color: #4CAF50;
+    color: white;
+}
 
+.btn-reset {
+    background-color: #f44336;
+    color: white;
+}
 
-/* Roll 6: Face 2 (Back) must show 6 dots */
-.face:nth-child(2) .dot:nth-child(1) { grid-area: a; } 
-.face:nth-child(2) .dot:nth-child(2) { grid-area: c; } 
-.face:nth-child(2) .dot:nth-child(3) { grid-area: e; } 
-.face:nth-child(2) .dot:nth-child(4) { grid-area: f; } 
-.face:nth-child(2) .dot:nth-child(5) { grid-area: g; } 
-.face:nth-child(2) .dot:nth-child(6) { grid-area: b; }
-.face-6 { transform: rotateX(180deg); }
-.face-6 .face:nth-child(2) .dot:nth-child(1) { display: block; } 
-.face-6 .face:nth-child(2) .dot:nth-child(2) { display: block; } 
-.face-6 .face:nth-child(2) .dot:nth-child(3) { display: block; } 
-.face-6 .face:nth-child(2) .dot:nth-child(4) { display: block; } 
-.face-6 .face:nth-child(2) .dot:nth-child(5) { display: block; } 
-.face-6 .face:nth-child(2) .dot:nth-child(6) { display: block; }
+.dice-value {
+    font-size: 24px;
+    font-weight: bold;
+    display: none; /* Hidden, as 3D dice is now used */
+}
+
+.active-player {
+    font-size: 18px;
+    margin: 0;
+}
+.active-player span {
+    font-weight: bold;
+    color: #4CAF50;
+}
+.player-select {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.player-select label {
+    font-weight: bold;
+}
+
+.player-select select {
+    padding: 5px;
+    border-radius: 5px;
+}
