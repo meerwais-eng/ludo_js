@@ -1,6 +1,7 @@
 import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS, TEAM_PLAYERS } from './constants.js';
 
-const diceButtonElement = document.querySelector('#dice-btn');
+// UPDATED SELECTOR for the new dice container
+const diceButtonElement = document.querySelector('#dice-btn'); 
 const playerPiecesElements = {
     P1: document.querySelectorAll('[player-id="P1"].player-piece'),
     P2: document.querySelectorAll('[player-id="P2"].player-piece'),
@@ -54,6 +55,7 @@ export class UI {
     }
 
     static setTurn(index) {
+        // Use window.PLAYERS as Ludo.js dynamically sets it via constants.setPlayers
         const activePlayers = window.PLAYERS || PLAYERS; 
         
         if(index < 0 || index >= activePlayers.length) {
@@ -63,36 +65,36 @@ export class UI {
         
         const player = activePlayers[index];
         
-        // NEW: Determine if we are in Team Mode by checking if all 4 players are active
+        // Determine if we are in Team Mode (4 active players & a recognized team)
         const isTeamMode = activePlayers.length === 4 && TEAM_PLAYERS.getTeam(player) !== null;
 
-        // Display player ID and Team
         const activePlayerSpan = document.querySelector('.active-player span');
         if (activePlayerSpan) {
             if (isTeamMode) {
                  const team = TEAM_PLAYERS.getTeam(player);
+                 // Display Player ID and Team
                  activePlayerSpan.innerHTML = `${player} (Team ${team})`;
             } else {
                  activePlayerSpan.innerText = player;
             }
         }
 
-        // Unhighlight all player bases first
         document.querySelectorAll('.player-base.highlight').forEach(base => {
             base.classList.remove('highlight');
         });
 
-        // highlight the active player base
         const activeBase = document.querySelector(`[player-id="${player}"].player-base`);
         if (activeBase) activeBase.classList.add('highlight');
     }
 
+    // UPDATED to use .dice-container class
     static enableDice() {
-        if (diceButtonElement) diceButtonElement.removeAttribute('disabled');
+        if (diceButtonElement) diceButtonElement.classList.remove('disabled');
     }
 
+    // UPDATED to use .dice-container class
     static disableDice() {
-        if (diceButtonElement) diceButtonElement.setAttribute('disabled', '');
+        if (diceButtonElement) diceButtonElement.classList.add('disabled');
     }
 
     static highlightPieces(player, pieces) {
@@ -108,7 +110,17 @@ export class UI {
         })
     }
 
+    // UPDATED to rotate the 3D dice model
     static setDiceValue(value) {
+        const diceElement = document.querySelector('#dice');
+        if (diceElement) {
+            // Remove previous face classes (face-1 to face-6)
+            diceElement.className = 'dice'; 
+            // Apply the new face class for 3D rotation
+            diceElement.classList.add(`face-${value}`); 
+        }
+        
+        // Hide the dice value text display (optional, based on your index.html)
         const diceValueElement = document.querySelector('.dice-value');
         if (diceValueElement) diceValueElement.innerText = value;
     }

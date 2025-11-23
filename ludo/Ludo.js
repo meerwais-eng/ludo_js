@@ -3,7 +3,7 @@ import { UI } from './UI.js';
 
 export class Ludo {
     currentPositions = {}; 
-    isTeamMode = false; // NEW: Flag for team mode
+    isTeamMode = false; 
 
     _diceValue;
     get diceValue() {
@@ -62,20 +62,20 @@ export class Ludo {
         const playerCount = parseInt(count, 10);
         let activePlayers;
         
-        // NEW: Check for the 4-Player Team Mode identifier '4T'
+        // Check for the 4-Player Team Mode identifier '4T'
         this.isTeamMode = count === '4T';
 
         if (this.isTeamMode) {
-            // Team Mode: P1(A) -> P4(B) -> P2(A) -> P3(B)
-            activePlayers = ALL_PLAYERS; // ['P1', 'P4', 'P2', 'P3']
+            // Team Mode: P1(A) -> P4(B) -> P2(A) -> P3(B) (Clockwise order for fair turns)
+            activePlayers = ALL_PLAYERS; 
         } else if (playerCount === 2) {
             // 2 players: P1 and P2 (opposite corners)
             activePlayers = ['P1', 'P2']; 
         } else if (playerCount === 3) {
-            // 3 players: P1, P4, P2 (circular geographical turns)
+            // 3 players: P1, P4, P2 
             activePlayers = ['P1', 'P4', 'P2']; 
         } else { 
-            // 4 players (Individual): P1, P4, P2, P3 (Clockwise)
+            // 4 players (Individual)
             activePlayers = ALL_PLAYERS; 
         }
         
@@ -100,13 +100,12 @@ export class Ludo {
         const player = PLAYERS[this.turn]; 
         const eligiblePieces = this.getEligiblePieces(player);
         
+        // Automatic Move Logic (If only one piece can move)
         if(eligiblePieces.length === 1) {
-            // Auto-move if only one piece is eligible
             const piece = eligiblePieces[0];
             console.log(`Auto-moving piece ${piece} for player ${player}`);
             this.handlePieceClick(player, piece);
         } else if(eligiblePieces.length > 1) {
-            // Highlight the pieces if multiple moves are possible
             UI.highlightPieces(player, eligiblePieces);
         } else {
             // No eligible moves, pass turn
@@ -127,6 +126,7 @@ export class Ludo {
                 return false;
             }
 
+            // Piece is in base and dice is not 6
             if(
                 BASE_POSITIONS[player].includes(currentPosition)
                 && this.diceValue !== 6
@@ -136,12 +136,14 @@ export class Ludo {
 
             // Check if piece would overshoot the Home Position
             const newPosition = currentPosition + this.diceValue;
+            const homeEntranceStart = HOME_ENTRANCE[player][0];
+            const homePosition = HOME_POSITIONS[player];
 
             if (
-                HOME_ENTRANCE[player].includes(currentPosition) || 
-                (currentPosition > HOME_ENTRANCE[player][0] && currentPosition < HOME_POSITIONS[player])
+                (currentPosition >= homeEntranceStart && currentPosition < homePosition) || 
+                (newPosition > homeEntranceStart && newPosition < homePosition)
             ) {
-                 if (newPosition > HOME_POSITIONS[player]) {
+                 if (newPosition > homePosition) {
                     return false;
                  }
             }
@@ -224,7 +226,6 @@ export class Ludo {
                 clearInterval(interval);
 
                 if(this.hasPlayerWon(player)) {
-                    // Alert team win or individual win
                     const winMessage = this.isTeamMode 
                         ? `Team ${TEAM_PLAYERS.getTeam(player)} has won!` 
                         : `Player: ${player} has won!`;
@@ -251,7 +252,7 @@ export class Ludo {
 
         const activePlayers = PLAYERS;
         
-        // Filter out players who are either the current player OR the current player's teammate
+        // Determine opponents based on game mode
         const opponents = activePlayers.filter(p => {
             if (this.isTeamMode) {
                 // In Team Mode, only kill players not on the same team
@@ -266,7 +267,7 @@ export class Ludo {
             [0, 1, 2, 3].forEach(opponentPiece => {
                 const opponentPosition = this.currentPositions[opponent][opponentPiece];
 
-                // Check for a kill at a non-safe position
+                // Kill only at non-safe positions
                 if(currentPosition === opponentPosition && !SAFE_POSITIONS.includes(currentPosition)) {
                     this.setPiecePosition(opponent, opponentPiece, BASE_POSITIONS[opponent][opponentPiece]);
                     kill = true;
@@ -283,10 +284,7 @@ export class Ludo {
             const teammate = TEAM_PLAYERS.getTeammate(player);
             if (!teammate) return false; 
             
-            // Check current player's pieces
             const playerPiecesHome = [0, 1, 2, 3].every(piece => this.currentPositions[player][piece] === HOME_POSITIONS[player]);
-            
-            // Check teammate's pieces
             const teammatePiecesHome = [0, 1, 2, 3].every(piece => this.currentPositions[teammate][piece] === HOME_POSITIONS[teammate]);
 
             return playerPiecesHome && teammatePiecesHome;

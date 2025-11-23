@@ -1,15 +1,15 @@
 export const COORDINATES_MAP = {
     0: [6, 13], 1: [6, 12], 2: [6, 11], 3: [6, 10], 4: [6, 9], 5: [5, 8], 6: [4, 8], 7: [3, 8], 8: [2, 8], 9: [1, 8], 10: [0, 8],
-    11: [0, 7], // P3 (Yellow) Turning Point
+    11: [0, 7], // P3 (Yellow/Top-Left) Turning Point
     12: [0, 6], 13: [1, 6], // P3 (Yellow) Start Position
     14: [2, 6], 15: [3, 6], 16: [4, 6], 17: [5, 6], 18: [6, 5], 19: [6, 4], 20: [6, 3], 21: [6, 2], 22: [6, 1], 23: [6, 0],
-    24: [7, 0], // P2 (Green) Turning Point
+    24: [7, 0], // P2 (Green/Top-Right) Turning Point
     25: [8, 0], 26: [8, 1], // P2 (Green) Start Position
     27: [8, 2], 28: [8, 3], 29: [8, 4], 30: [8, 5], 31: [9, 6], 32: [10, 6], 33: [11, 6], 34: [12, 6], 35: [13, 6], 36: [14, 6],
-    37: [14, 7], // P4 (Blue) Turning Point
+    37: [14, 7], // P4 (Blue/Bottom-Right) Turning Point
     38: [14, 8], 39: [13, 8], // P4 (Blue) Start Position
     40: [12, 8], 41: [11, 8], 42: [10, 8], 43: [9, 8], 44: [8, 9], 45: [8, 10], 46: [8, 11], 47: [8, 12], 48: [8, 13], 49: [8, 14],
-    50: [7, 14], // P1 (Red) Turning Point
+    50: [7, 14], // P1 (Red/Bottom-Left) Turning Point
     51: [6, 14],
 
     // HOME ENTRANCE
@@ -27,14 +27,14 @@ export const COORDINATES_MAP = {
 
 export const STEP_LENGTH = 6.66;
 
-// Turn order is P1(A) -> P4(B) -> P2(A) -> P3(B) to alternate teams geographically
+// Clockwise turn order for 4 players: P1(BL) -> P4(BR) -> P2(TR) -> P3(TL)
 export const ALL_PLAYERS = ['P1', 'P4', 'P2', 'P3']; 
-export let PLAYERS = ['P1', 'P2']; 
+export let PLAYERS = ['P1', 'P2']; // Default active players
 
-// NEW: Define Team Structure and utility functions
+// Team Structure
 export const TEAM_PLAYERS = {
-    A: ['P1', 'P2'], // P1 (Bottom-Left) and P2 (Top-Right) are opposite corners
-    B: ['P4', 'P3'], // P4 (Bottom-Right) and P3 (Top-Left) are opposite corners
+    A: ['P1', 'P2'], // Team A: Bottom-Left and Top-Right
+    B: ['P4', 'P3'], // Team B: Bottom-Right and Top-Left
     
     getTeam: (player) => {
         if (TEAM_PLAYERS.A.includes(player)) return 'A';
@@ -44,7 +44,6 @@ export const TEAM_PLAYERS = {
     getTeammate: (player) => {
         const team = TEAM_PLAYERS.getTeam(player);
         if (!team) return null;
-        // Returns the other player in the team array
         return TEAM_PLAYERS[team].find(p => p !== player); 
     }
 };
@@ -80,5 +79,7 @@ export const STATE = {
 
 export function setPlayers(playersArray) {
     PLAYERS = playersArray;
+    // Expose the active players array globally for use in UI (though module exports are better)
+    window.PLAYERS = PLAYERS; 
     console.log('Active players set to:', PLAYERS);
 }
