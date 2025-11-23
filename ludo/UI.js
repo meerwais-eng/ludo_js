@@ -1,5 +1,4 @@
-// UI.js
-import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS } from './constants.js';
+import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS, TEAM_PLAYERS } from './constants.js';
 
 const diceButtonElement = document.querySelector('#dice-btn');
 const playerPiecesElements = {
@@ -12,7 +11,6 @@ const playerCountElement = document.querySelector('#player-count');
 
 export class UI {
     static listenDiceClick(callback) {
-        // FIX: Add null check to prevent script crash
         if (diceButtonElement) {
             diceButtonElement.addEventListener('click', callback);
         } else {
@@ -22,7 +20,6 @@ export class UI {
 
     static listenResetClick(callback) {
         const resetBtn = document.querySelector('button#reset-btn');
-        // FIX: Query the reset button inside the method and add null check
         if (resetBtn) {
             resetBtn.addEventListener('click', callback);
         } else {
@@ -65,9 +62,20 @@ export class UI {
         }
         
         const player = activePlayers[index];
+        
+        // NEW: Determine if we are in Team Mode by checking if all 4 players are active
+        const isTeamMode = activePlayers.length === 4 && TEAM_PLAYERS.getTeam(player) !== null;
 
+        // Display player ID and Team
         const activePlayerSpan = document.querySelector('.active-player span');
-        if (activePlayerSpan) activePlayerSpan.innerText = player;
+        if (activePlayerSpan) {
+            if (isTeamMode) {
+                 const team = TEAM_PLAYERS.getTeam(player);
+                 activePlayerSpan.innerHTML = `${player} (Team ${team})`;
+            } else {
+                 activePlayerSpan.innerText = player;
+            }
+        }
 
         // Unhighlight all player bases first
         document.querySelectorAll('.player-base.highlight').forEach(base => {
@@ -80,12 +88,10 @@ export class UI {
     }
 
     static enableDice() {
-        // FIX: Add null check
         if (diceButtonElement) diceButtonElement.removeAttribute('disabled');
     }
 
     static disableDice() {
-        // FIX: Add null check
         if (diceButtonElement) diceButtonElement.setAttribute('disabled', '');
     }
 
@@ -111,7 +117,7 @@ export class UI {
         // Hide all pieces and bases initially
         ALL_PLAYERS.forEach(player => {
             const base = document.querySelector(`[player-id="${player}"].player-base`);
-            if (base) base.style.display = 'none'; // Null check added
+            if (base) base.style.display = 'none';
             playerPiecesElements[player].forEach(piece => {
                 if (piece) piece.style.display = 'none';
             });
@@ -120,7 +126,7 @@ export class UI {
         // Show only the active players' elements
         activePlayers.forEach(player => {
             const base = document.querySelector(`[player-id="${player}"].player-base`);
-            if (base) base.style.display = 'block'; // Null check added
+            if (base) base.style.display = 'block';
             playerPiecesElements[player].forEach(piece => {
                 if (piece) piece.style.display = 'block';
             });
