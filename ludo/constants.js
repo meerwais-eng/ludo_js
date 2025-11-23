@@ -100,13 +100,13 @@ export const COORDINATES_MAP = {
     602: [10.5, 3.45],
     603: [12.54, 3.45],
 
-    // P3 (Top Left) - NEW
+    // P3 (Top Left)
     700: [1.5, 1.58],
     701: [3.57, 1.58],
     702: [1.5, 3.45],
     703: [3.57, 3.45],
 
-    // P4 (Bottom Right) - NEW
+    // P4 (Bottom Right)
     800: [10.5, 10.58],
     801: [12.54, 10.58],
     802: [10.5, 12.43],
@@ -115,9 +115,8 @@ export const COORDINATES_MAP = {
 
 export const STEP_LENGTH = 6.66;
 
-// NEW: Define all four possible players
-export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
-// Initial game state. Will be overridden by setPlayers
+// FIX: Updated ALL_PLAYERS to follow a clockwise path on the board (BL -> BR -> TR -> TL)
+export const ALL_PLAYERS = ['P1', 'P4', 'P2', 'P3']; 
 export let PLAYERS = ['P1', 'P2']; 
 
 export const BASE_POSITIONS = {
@@ -162,7 +161,6 @@ export const STATE = {
     DICE_ROLLED: 'DICE_ROLLED',
 }
 
-// NEW: Function to set the active players array
 export function setPlayers(playersArray) {
     PLAYERS = playersArray;
     console.log('Active players set to:', PLAYERS);
