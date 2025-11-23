@@ -65,7 +65,7 @@ export class Ludo {
         
         if (playerCount === 2) {
             // Correct for 2 players: P1 (Bottom-Left) and P2 (Top-Right) are opposite.
-            activePlayers = ['P1', 'P2']; 
+            activePlayers = ['P1', 'P3']; 
         } else if (playerCount === 3) {
             // Uses P1, P4, P2 to maintain circular geographical turns for three players.
             activePlayers = ['P1', 'P4', 'P2']; 
