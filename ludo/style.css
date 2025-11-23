@@ -58,12 +58,12 @@
 }
 
 [player-id="P2"].player-piece {
-    background-color: #ffc900; /* Green */
+    background-color: #00b550; /* Green */
 }
 
 /* NEW: P3 (Yellow/Orange) */
 [player-id="P3"].player-piece {
-    background-color: #00b550; 
+    background-color: #ffc900; 
 }
 
 /* NEW: P4 (Blue/Purple) */
