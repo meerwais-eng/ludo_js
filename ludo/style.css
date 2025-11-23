@@ -87,14 +87,14 @@
 
 .player-bases [player-id="P2"].player-base {
     top: 0;
-    right: 0;
+    left: 0;
     border-color: #049645; /* Green Base */
 }
 
 /* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
-    left: 0;
+    right: 0;
     border-color: #e7a712; /* Yellow Base */
 }
 
