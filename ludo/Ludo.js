@@ -1,3 +1,4 @@
+// Ludo.js
 import { BASE_POSITIONS, HOME_ENTRANCE, HOME_POSITIONS, PLAYERS, SAFE_POSITIONS, START_POSITIONS, STATE, TURNING_POINTS, ALL_PLAYERS, setPlayers } from './constants.js';
 import { UI } from './UI.js';
 
@@ -58,7 +59,6 @@ export class Ludo {
         });
     }
 
-    // FIX: Conditional logic added here
     updatePlayerCount(count) {
         const playerCount = parseInt(count, 10);
         let activePlayers;
@@ -94,9 +94,17 @@ export class Ludo {
     checkForEligiblePieces() {
         const player = PLAYERS[this.turn]; 
         const eligiblePieces = this.getEligiblePieces(player);
-        if(eligiblePieces.length) {
+        
+        if(eligiblePieces.length === 1) {
+            // NEW: Auto-move if only one piece is eligible
+            const piece = eligiblePieces[0];
+            console.log(`Auto-moving piece ${piece} for player ${player}`);
+            this.handlePieceClick(player, piece);
+        } else if(eligiblePieces.length > 1) {
+            // Highlight the pieces if multiple moves are possible
             UI.highlightPieces(player, eligiblePieces);
         } else {
+            // No eligible moves, pass turn
             this.incrementTurn();
         }
     }
@@ -114,6 +122,7 @@ export class Ludo {
                 return false;
             }
 
+            // Piece is in base and dice is not 6
             if(
                 BASE_POSITIONS[player].includes(currentPosition)
                 && this.diceValue !== 6
@@ -121,12 +130,19 @@ export class Ludo {
                 return false;
             }
 
-            if(
-                HOME_ENTRANCE[player].includes(currentPosition)
-                && this.diceValue > HOME_POSITIONS[player] - currentPosition
-                ) {
-                return false;
+            // Piece is near home but dice value is too high
+            // We check the new position, not the current position, to avoid issues.
+            const newPosition = currentPosition + this.diceValue;
+
+            if (
+                HOME_ENTRANCE[player].includes(currentPosition) || 
+                (newPosition > HOME_ENTRANCE[player][0] && newPosition < HOME_POSITIONS[player])
+            ) {
+                 if (newPosition > HOME_POSITIONS[player]) {
+                    return false;
+                 }
             }
+
 
             return true;
         });
@@ -141,6 +157,7 @@ export class Ludo {
         
         this.currentPositions = {}; 
         PLAYERS.forEach(player => {
+            // Ensure deep clone of base positions
             this.currentPositions[player] = structuredClone(BASE_POSITIONS[player]);
         });
 
@@ -173,19 +190,25 @@ export class Ludo {
             return;
         }
         
+        // Piece click manually executes handlePieceClick
         this.handlePieceClick(player, piece);
     }
 
     handlePieceClick(player, piece) {
+        // Ensure piece is parsed to int for array access
+        piece = parseInt(piece, 10);
+        
         const currentPosition = this.currentPositions[player][piece];
         
+        // Case: Piece is in base and dice is 6 (always an eligible move handled first)
         if(BASE_POSITIONS[player].includes(currentPosition) && this.diceValue === 6) {
             this.setPiecePosition(player, piece, START_POSITIONS[player]);
             this.state = STATE.DICE_NOT_ROLLED;
             return;
         }
 
-        UI.unhighlightPieces();
+        // If it was an auto-move, unhighlighting is necessary here
+        UI.unhighlightPieces(); 
         this.movePiece(player, piece, this.diceValue);
     }
 
