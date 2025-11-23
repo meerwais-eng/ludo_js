@@ -1,6 +1,11 @@
+// UI.js
+// NOTE: Assuming UI.js, constants.js, and Ludo.js are siblings in the same folder (e.g., 'ludo/')
 import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS } from './constants.js';
 
+// Query DOM elements at the top level. They may be null if the script runs too early.
 const diceButtonElement = document.querySelector('#dice-btn');
+const resetButtonElement = document.querySelector('button#reset-btn'); // Query reset button here for consistency/safety
+
 // UPDATED: Include P3 and P4 pieces in the selector
 const playerPiecesElements = {
     P1: document.querySelectorAll('[player-id="P1"].player-piece'),
@@ -8,24 +13,39 @@ const playerPiecesElements = {
     P3: document.querySelectorAll('[player-id="P3"].player-piece'), // NEW
     P4: document.querySelectorAll('[player-id="P4"].player-piece'), // NEW
 }
-const playerCountElement = document.querySelector('#player-count'); // NEW
+const playerCountElement = document.querySelector('#player-count'); // NEW selector element
 
 export class UI {
     static listenDiceClick(callback) {
-        diceButtonElement.addEventListener('click', callback);
+        // ADD NULL CHECK: Only attach listener if the element exists
+        if (diceButtonElement) {
+            diceButtonElement.addEventListener('click', callback);
+        } else {
+             console.error('Dice button element not found. Check index.html and script timing.');
+        }
     }
 
     static listenResetClick(callback) {
-        document.querySelector('button#reset-btn').addEventListener('click', callback)
+        // ADD NULL CHECK: Only attach listener if the element exists
+        if (resetButtonElement) {
+            resetButtonElement.addEventListener('click', callback)
+        } else {
+            console.error('Reset button element not found. Check index.html and script timing.');
+        }
     }
 
     static listenPieceClick(callback) {
-        document.querySelector('.player-pieces').addEventListener('click', callback)
+        const piecesContainer = document.querySelector('.player-pieces');
+        if (piecesContainer) {
+             piecesContainer.addEventListener('click', callback)
+        }
     }
-
+    
     // NEW: Listener for player count change
     static listenPlayerCountChange(callback) {
-        playerCountElement.addEventListener('change', callback);
+        if (playerCountElement) {
+            playerCountElement.addEventListener('change', callback);
+        }
     }
 
     /**
@@ -47,7 +67,7 @@ export class UI {
     }
 
     static setTurn(index) {
-        // Use the current dynamic PLAYERS array from the constants module
+        // Use the actual PLAYERS array which is now dynamically sized
         const activePlayers = window.PLAYERS || PLAYERS; 
         
         if(index < 0 || index >= activePlayers.length) {
@@ -58,7 +78,8 @@ export class UI {
         const player = activePlayers[index];
 
         // Display player ID
-        document.querySelector('.active-player span').innerText = player;
+        const activePlayerSpan = document.querySelector('.active-player span');
+        if(activePlayerSpan) activePlayerSpan.innerText = player;
 
         // Unhighlight all player bases first
         document.querySelectorAll('.player-base.highlight').forEach(base => {
@@ -66,15 +87,16 @@ export class UI {
         });
 
         // highlight the active player base
-        document.querySelector(`[player-id="${player}"].player-base`).classList.add('highlight');
+        const activeBase = document.querySelector(`[player-id="${player}"].player-base`);
+        if(activeBase) activeBase.classList.add('highlight');
     }
 
     static enableDice() {
-        diceButtonElement.removeAttribute('disabled');
+        if(diceButtonElement) diceButtonElement.removeAttribute('disabled');
     }
 
     static disableDice() {
-        diceButtonElement.setAttribute('disabled', '');
+        if(diceButtonElement) diceButtonElement.setAttribute('disabled', '');
     }
 
     /**
@@ -84,7 +106,7 @@ export class UI {
     static highlightPieces(player, pieces) {
         pieces.forEach(piece => {
             const pieceElement = playerPiecesElements[player][piece];
-            pieceElement.classList.add('highlight');
+            if(pieceElement) pieceElement.classList.add('highlight');
         })
     }
 
@@ -95,21 +117,28 @@ export class UI {
     }
 
     static setDiceValue(value) {
-        document.querySelector('.dice-value').innerText = value;
+        const diceValueElement = document.querySelector('.dice-value');
+        if(diceValueElement) diceValueElement.innerText = value;
     }
     
     // NEW: Function to hide/show pieces and bases for inactive players
     static setGameVisibility(activePlayers) {
         // Hide all pieces and bases initially
         ALL_PLAYERS.forEach(player => {
-            document.querySelector(`[player-id="${player}"].player-base`).style.display = 'none';
-            playerPiecesElements[player].forEach(piece => piece.style.display = 'none');
+            const base = document.querySelector(`[player-id="${player}"].player-base`);
+            if(base) base.style.display = 'none';
+            playerPiecesElements[player].forEach(piece => {
+                if(piece) piece.style.display = 'none';
+            });
         });
         
         // Show only the active players' elements
         activePlayers.forEach(player => {
-            document.querySelector(`[player-id="${player}"].player-base`).style.display = 'block';
-            playerPiecesElements[player].forEach(piece => piece.style.display = 'block');
+            const base = document.querySelector(`[player-id="${player}"].player-base`);
+            if(base) base.style.display = 'block';
+            playerPiecesElements[player].forEach(piece => {
+                if(piece) piece.style.display = 'block';
+            });
         });
     }
 }

@@ -2,7 +2,6 @@ import { BASE_POSITIONS, HOME_ENTRANCE, HOME_POSITIONS, PLAYERS, SAFE_POSITIONS,
 import { UI } from './UI.js';
 
 export class Ludo {
-    // Current positions now dynamically sized based on active players
     currentPositions = {}; 
 
     _diceValue;
@@ -21,7 +20,8 @@ export class Ludo {
     }
     set turn(value) {
         this._turn = value;
-        // The UI now dynamically figures out the player based on the active PLAYERS array
+        // The UI now uses the dynamic PLAYERS array from the constants module
+        // We use window.PLAYERS as a fallback to ensure access to the dynamic array
         UI.setTurn(value); 
     }
 
@@ -48,7 +48,10 @@ export class Ludo {
         this.listenPieceClick();
         this.listenPlayerCountChange(); // NEW: Listen for selector change
 
-        this.updatePlayerCount(document.querySelector('#player-count').value);
+        // Initialize with the value from the new selector, default to 4 if the selector is missing (robustness)
+        const initialCount = document.querySelector('#player-count')?.value || '4';
+        this.updatePlayerCount(initialCount);
+        this.resetGame();
     }
     
     // NEW: Handle player count change
@@ -62,11 +65,9 @@ export class Ludo {
     updatePlayerCount(count) {
         const playerCount = parseInt(count, 10);
         
-        // Select the first 'count' players from the ALL_PLAYERS list
         const activePlayers = ALL_PLAYERS.slice(0, playerCount);
         setPlayers(activePlayers); // Update the global PLAYERS constant
         
-        // Update UI visibility
         UI.setGameVisibility(activePlayers);
     }
 
@@ -84,10 +85,8 @@ export class Ludo {
 
     checkForEligiblePieces() {
         const player = PLAYERS[this.turn]; // Use dynamic PLAYERS array
-        // eligible pieces of given player
         const eligiblePieces = this.getEligiblePieces(player);
         if(eligiblePieces.length) {
-            // highlight the pieces
             UI.highlightPieces(player, eligiblePieces);
         } else {
             this.incrementTurn();
@@ -95,7 +94,7 @@ export class Ludo {
     }
 
     incrementTurn() {
-        // UPDATED: Use modulo operation based on active PLAYERS length
+        // Use modulo operation based on active PLAYERS length
         this.turn = (this.turn + 1) % PLAYERS.length; 
         this.state = STATE.DICE_NOT_ROLLED;
     }
@@ -115,7 +114,6 @@ export class Ludo {
                 return false;
             }
 
-            // Check if move exceeds home target
             if(
                 HOME_ENTRANCE[player].includes(currentPosition)
                 && this.diceValue > HOME_POSITIONS[player] - currentPosition
@@ -166,7 +164,6 @@ export class Ludo {
         const player = target.getAttribute('player-id');
         const piece = target.getAttribute('piece');
         
-        // NEW: Ensure the clicked piece belongs to the active player
         if(player !== PLAYERS[this.turn]) {
             console.error('Not the active player\'s piece!');
             return;
@@ -190,7 +187,6 @@ export class Ludo {
     }
 
     setPiecePosition(player, piece, newPosition) {
-        // Ensure piece is treated as a number
         piece = parseInt(piece, 10);
         this.currentPositions[player][piece] = newPosition;
         UI.setPiecePosition(player, piece, newPosition)
@@ -204,7 +200,6 @@ export class Ludo {
             if(moveBy === 0) {
                 clearInterval(interval);
 
-                // Check if player won
                 if(this.hasPlayerWon(player)) {
                     alert(`Player: ${player} has won!`);
                     this.resetGame();
@@ -227,7 +222,7 @@ export class Ludo {
         const currentPosition = this.currentPositions[player][piece];
         let kill = false;
 
-        // UPDATED: Iterate over all active opponents, not just 'P1'/'P2'
+        // Iterate over all active opponents
         const opponents = PLAYERS.filter(p => p !== player);
 
         opponents.forEach(opponent => {
@@ -255,23 +250,18 @@ export class Ludo {
     getIncrementedPosition(player, piece) {
         const currentPosition = this.currentPositions[player][piece];
 
-        // Check if piece is in the common path or its own home entrance path
-        if(currentPosition >= HOME_ENTRANCE[player][0] && currentPosition < HOME_POSITIONS[player]) {
-            return currentPosition + 1; // Already in the home entrance path
-        }
-        
-        // Common path turning point logic
         if(currentPosition === TURNING_POINTS[player]) {
             return HOME_ENTRANCE[player][0];
         }
+
+        if(currentPosition >= HOME_ENTRANCE[player][0] && currentPosition < HOME_POSITIONS[player]) {
+            return currentPosition + 1;
+        }
         
-        // Wrapping around the board (from 51 to 0)
-        // This only happens for P1 as P1 has start point 0 and 51 is the end of the loop
-        if(currentPosition === 51 && player === 'P1') {
+        if(currentPosition === 51) {
             return 0;
-        } 
-        
-        // This logic handles all other pieces moving forward on the common path (0-51)
+        }
+
         return currentPosition + 1;
     }
 }

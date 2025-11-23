@@ -10,9 +10,9 @@ export const COORDINATES_MAP = {
     8: [2, 8],
     9: [1, 8],
     10: [0, 8],
-    11: [0, 7],
+    11: [0, 7], // P3 (Yellow) Turning Point is 11
     12: [0, 6],
-    13: [1, 6],
+    13: [1, 6], // P3 (Yellow) Start Position is 13
     14: [2, 6],
     15: [3, 6],
     16: [4, 6],
@@ -23,9 +23,9 @@ export const COORDINATES_MAP = {
     21: [6, 2],
     22: [6, 1],
     23: [6, 0],
-    24: [7, 0],
+    24: [7, 0], // P2 (Green) Turning Point is 24
     25: [8, 0],
-    26: [8, 1],
+    26: [8, 1], // P2 (Green) Start Position is 26
     27: [8, 2],
     28: [8, 3],
     29: [8, 4],
@@ -36,9 +36,9 @@ export const COORDINATES_MAP = {
     34: [12, 6],
     35: [13, 6],
     36: [14, 6],
-    37: [14, 7],
+    37: [14, 7], // P4 (Blue) Turning Point is 37
     38: [14, 8],
-    39: [13, 8],
+    39: [13, 8], // P4 (Blue) Start Position is 39
     40: [12, 8],
     41: [11, 8],
     42: [10, 8],
@@ -49,12 +49,12 @@ export const COORDINATES_MAP = {
     47: [8, 12],
     48: [8, 13],
     49: [8, 14],
-    50: [7, 14],
+    50: [7, 14], // P1 (Red) Turning Point is 50
     51: [6, 14],
 
     // HOME ENTRANCE (P1 - Red, P2 - Green, P3 - Yellow, P4 - Blue)
 
-    // P1 (Red - from 51)
+    // P1
     100: [7, 13],
     101: [7, 12],
     102: [7, 11],
@@ -62,7 +62,7 @@ export const COORDINATES_MAP = {
     104: [7, 9],
     105: [7, 8], // Home position
 
-    // P2 (Green - from 12)
+    // P2
     200: [7, 1],
     201: [7, 2],
     202: [7, 3],
@@ -70,7 +70,7 @@ export const COORDINATES_MAP = {
     204: [7, 5],
     205: [7, 6], // Home position
 
-    // P3 (Yellow - from 25)
+    // P3 (Yellow - Home entrance from 11)
     300: [1, 7],
     301: [2, 7],
     302: [3, 7],
@@ -78,7 +78,7 @@ export const COORDINATES_MAP = {
     304: [5, 7],
     305: [6, 7], // Home position
 
-    // P4 (Blue - from 38)
+    // P4 (Blue - Home entrance from 37)
     400: [13, 7],
     401: [12, 7],
     402: [11, 7],
@@ -88,25 +88,25 @@ export const COORDINATES_MAP = {
 
     // BASE POSITIONS
 
-    // P1 (Red - Bottom Left)
+    // P1 (Bottom Left)
     500: [1.5, 10.58],
     501: [3.57, 10.58],
     502: [1.5, 12.43],
     503: [3.57, 12.43],
 
-    // P2 (Green - Top Left)
-    600: [1.5, 1.58],
-    601: [3.57, 1.58],
-    602: [1.5, 3.45],
-    603: [3.57, 3.45],
+    // P2 (Top Right)
+    600: [10.5, 1.58],
+    601: [12.54, 1.58],
+    602: [10.5, 3.45],
+    603: [12.54, 3.45],
 
-    // P3 (Yellow - Top Right)
-    700: [10.5, 1.58],
-    701: [12.54, 1.58],
-    702: [10.5, 3.45],
-    703: [12.54, 3.45],
+    // P3 (Top Left) - NEW
+    700: [1.5, 1.58],
+    701: [3.57, 1.58],
+    702: [1.5, 3.45],
+    703: [3.57, 3.45],
 
-    // P4 (Blue - Bottom Right)
+    // P4 (Bottom Right) - NEW
     800: [10.5, 10.58],
     801: [12.54, 10.58],
     802: [10.5, 12.43],
@@ -115,9 +115,9 @@ export const COORDINATES_MAP = {
 
 export const STEP_LENGTH = 6.66;
 
-// UPDATED: Now includes all four players
+// NEW: Define all four possible players
 export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
-// Initial game state will use these, but Ludo.js will filter based on selection
+// Initial game state. Will be overridden by setPlayers
 export let PLAYERS = ['P1', 'P2']; 
 
 export const BASE_POSITIONS = {
@@ -162,7 +162,8 @@ export const STATE = {
     DICE_ROLLED: 'DICE_ROLLED',
 }
 
-// NEW: Function to set the active players
+// NEW: Function to set the active players array
 export function setPlayers(playersArray) {
     PLAYERS = playersArray;
+    console.log('Active players set to:', PLAYERS);
 }

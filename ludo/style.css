@@ -11,7 +11,8 @@
 
     height: 450px;
     width: 100%;
-    background-image: url('./ludo-bg.jpg');
+    /* Ensure ludo-bg.jpg is in the same directory as style.css, which is 'ludo/' */
+    background-image: url('./ludo-bg.jpg'); 
     background-size: contain;
     position: relative;
 }
@@ -53,11 +54,11 @@
 }
 
 [player-id="P1"].player-piece {
-    background-color: #2eafff; /* Red/Blue */
+    background-color: #2eafff; /* Red/Blue in old version, keeping old P1 color */
 }
 
 [player-id="P2"].player-piece {
-    background-color: #00b550; /* Green */
+    background-color: #00b550; /* Green in old version, keeping old P2 color */
 }
 
 /* NEW: P3 (Yellow/Orange) */
@@ -67,8 +68,9 @@
 
 /* NEW: P4 (Blue/Purple) */
 [player-id="P4"].player-piece {
-    background-color: #e30f12; 
+    background-color: #8c00b5; 
 }
+
 
 .player-base {
     width: 40%;
@@ -83,14 +85,13 @@
     border-color: #1295e7;
 }
 
-/* NEW: P2 base moved to Top Left */
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
     border-color: #049645;
 }
 
-/* NEW: P3 base in Top Right */
+/* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
@@ -101,7 +102,7 @@
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e30f12;
+    border-color: #e70a0a;
 }
 
 
@@ -141,6 +142,8 @@
     font-size: 24px;
     font-weight: bold;
 }
+
+/* NEW: Style for the player selector */
 .player-select {
     margin-bottom: 10px;
     display: flex;
