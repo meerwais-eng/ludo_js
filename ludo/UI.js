@@ -1,8 +1,7 @@
-// NOTE: Assuming UI.js, constants.js, and Ludo.js are siblings in the same folder (e.g., 'ludo/')
+// UI.js
 import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS } from './constants.js';
 
 const diceButtonElement = document.querySelector('#dice-btn');
-// UPDATED: Include P3 and P4 pieces in the selector
 const playerPiecesElements = {
     P1: document.querySelectorAll('[player-id="P1"].player-piece'),
     P2: document.querySelectorAll('[player-id="P2"].player-piece'),
@@ -38,18 +37,12 @@ export class UI {
         }
     }
     
-    // NEW: Listener for player count change
     static listenPlayerCountChange(callback) {
         if (playerCountElement) {
             playerCountElement.addEventListener('change', callback);
         }
     }
 
-    /**
-     * * @param {string} player 
-     * @param {Number} piece 
-     * @param {Number} newPosition 
-     */
     static setPiecePosition(player, piece, newPosition) {
         if(!playerPiecesElements[player] || !playerPiecesElements[player][piece]) {
             console.error(`Player element of given player: ${player} and piece: ${piece} not found`)
@@ -73,7 +66,6 @@ export class UI {
         
         const player = activePlayers[index];
 
-        // Display player ID
         const activePlayerSpan = document.querySelector('.active-player span');
         if (activePlayerSpan) activePlayerSpan.innerText = player;
 
@@ -97,10 +89,6 @@ export class UI {
         if (diceButtonElement) diceButtonElement.setAttribute('disabled', '');
     }
 
-    /**
-     * * @param {string} player 
-     * @param {Number[]} pieces 
-     */
     static highlightPieces(player, pieces) {
         pieces.forEach(piece => {
             const pieceElement = playerPiecesElements[player][piece];
@@ -119,12 +107,11 @@ export class UI {
         if (diceValueElement) diceValueElement.innerText = value;
     }
     
-    // NEW: Function to hide/show pieces and bases for inactive players
     static setGameVisibility(activePlayers) {
         // Hide all pieces and bases initially
         ALL_PLAYERS.forEach(player => {
             const base = document.querySelector(`[player-id="${player}"].player-base`);
-            if (base) base.style.display = 'none';
+            if (base) base.style.display = 'none'; // Null check added
             playerPiecesElements[player].forEach(piece => {
                 if (piece) piece.style.display = 'none';
             });
@@ -133,7 +120,7 @@ export class UI {
         // Show only the active players' elements
         activePlayers.forEach(player => {
             const base = document.querySelector(`[player-id="${player}"].player-base`);
-            if (base) base.style.display = 'block';
+            if (base) base.style.display = 'block'; // Null check added
             playerPiecesElements[player].forEach(piece => {
                 if (piece) piece.style.display = 'block';
             });
