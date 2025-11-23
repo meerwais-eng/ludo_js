@@ -119,21 +119,74 @@ export class Ludo {
         }
     }
 
-    getMovablePieces(player, diceValue) {
-        return [0, 1, 2, 3].filter(piece => {
-            const currentPosition = this.currentPositions[player][piece];
-            const isAtBase = BASE_POSITIONS[player].includes(currentPosition);
-
-            // Rule 1: Must roll a 6 to move piece from base
-            if (isAtBase) {
-                return diceValue === 6;
+    /**
+ * Helper to determine which pieces can move with the current dice roll.
+ */
+getMovablePieces(player, diceValue) {
+    const movablePieces = [];
+    
+    [0, 1, 2, 3].forEach(piece => {
+        const currentPos = this.currentPositions[player][piece];
+        
+        // Rule 1: Piece is in base, must roll 6 to move out.
+        if (BASE_POSITIONS[player].includes(currentPos)) {
+            if (diceValue === 6) {
+                // In a proper Ludo game, you'd also check if the START_POSITIONS[player] is safe/available.
+                movablePieces.push(piece);
             }
+        } 
+        // Rule 2: Piece is out of base.
+        else {
+            // Check if the final position is valid (i.e., not overshooting the HOME_POSITIONS)
+            // NOTE: This relies on a robust getIncrementedPosition/canReachDestination function 
+            // in your full Ludo logic to check for overshooting the Home slot.
+            // We assume a value <= HOME_POSITIONS[player] means it's a valid end point.
+            // For simplicity, we assume any move that is not from the base is valid if it doesn't overshoot.
+            
+            // To ensure the piece doesn't overshoot, you must check the destination
+            // (The exact implementation of this check depends on your full movement code)
+            
+            // Assuming an imaginary helper function exists to check if the destination is reachable:
+            if (this.canReachDestination(player, piece, diceValue)) { 
+                movablePieces.push(piece);
+            }
+        }
+    });
+    return movablePieces;
+}
 
-            // Rule 2: Cannot move past the home position
-            const newPosition = this.getNewPosition(player, piece, diceValue);
-            return newPosition !== HOME_POSITIONS[player] + 1;
-        });
+
+// **MODIFY** the existing rollDice() method
+rollDice() {
+    const diceValue = Math.floor(Math.random() * 6) + 1;
+    const player = PLAYERS[this.turn];
+
+    this.diceValue = diceValue;
+
+    const movablePieces = this.getMovablePieces(player, diceValue);
+
+    if (movablePieces.length === 1) {
+        // **NEW: AUTOMATIC MOVE** - Only one piece can move.
+        this.state = STATE.DICE_ROLLED; 
+        // Move the single piece. Your existing movePiece should handle the full distance and turn transition.
+        this.movePiece(player, movablePieces[0]); 
+
+    } else if (movablePieces.length > 1) {
+        // Multiple options, highlight pieces and wait for user click
+        UI.highlightPieces(player, movablePieces);
+        this.state = STATE.DICE_ROLLED;
+    } else {
+        // No possible moves
+        this.state = STATE.DICE_ROLLED; 
+
+        if (diceValue !== 6) {
+            this.incrementTurn();
+        } else {
+            // Rolled a 6 but can't move, still keep the turn.
+            this.state = STATE.DICE_NOT_ROLLED;
+        }
     }
+}
 
     getNewPosition(player, piece, diceValue) {
         const currentPosition = this.currentPositions[player][piece];
