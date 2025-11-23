@@ -8,6 +8,7 @@
 }
 
 .ludo-container .ludo {
+
     height: 450px;
     width: 100%;
     /* Ensure ludo-bg.jpg is in the same directory as style.css, which is 'ludo/' */
@@ -24,6 +25,7 @@
 .player-piece {
     width: 3%;
     height: 3%;
+    /* Changed from 10px to 50% for perfect circle pawns */
     border: 2px solid;
     border-radius: 50%; 
     position: absolute;
@@ -32,16 +34,17 @@
 
     z-index: 1;
 
-    /* 3D PAWN EFFECT */
+    /* NEW 3D PAWN EFFECT */
     box-shadow: 
-        inset 0 0 5px rgba(255, 255, 255, 0.8), 
-        inset 0 0 10px rgba(0, 0, 0, 0.6),    
-        3px 3px 5px rgba(0, 0, 0, 0.4);       
+        inset 0 0 5px rgba(255, 255, 255, 0.8), /* Inner highlight (top left) */
+        inset 0 0 10px rgba(0, 0, 0, 0.6),    /* Inner shadow (depth) */
+        3px 3px 5px rgba(0, 0, 0, 0.4);       /* Outer shadow (lifting piece) */
 }
 
 .player-piece.highlight {
     cursor: pointer;
     border: 2px dashed;
+    /* Deeper shadow when highlighted */
     box-shadow: 
         inset 0 0 5px rgba(255, 255, 255, 0.8),
         inset 0 0 10px rgba(0, 0, 0, 0.6),
@@ -87,25 +90,25 @@
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7; /* P1 (Bottom-Left) Base */
+    border-color: #1295e7; /* Red/Blue Base */
 }
 
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #049645; /* P2 (Top-Right) Base */
+    border-color: #049645; /* Green Base */
 }
 
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
-    border-color: #e7a712; /* P3 (Top-Left) Base */
+    border-color: #e7a712; /* Yellow Base */
 }
 
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; /* P4 (Bottom-Right) Base */
+    border-color: #e70a0a; /* Blue/Purple Base */
 }
 
 
@@ -120,6 +123,7 @@
 }
 
 .btn {
+    /* Existing button styles */
     padding: 8px 20px;
     border: none;
     cursor: pointer;
@@ -128,6 +132,34 @@
 
 .btn:disabled {
     opacity: 0.5;
+}
+
+/* DICE BUTTON ENHANCEMENT */
+#dice-btn {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 12px;
+    background-color: #009d60; /* Green color for dice button */
+    color: white;
+    font-weight: bold;
+    
+    /* NEW 3D/NEUMORPHISM EFFECT */
+    box-shadow: 
+        5px 5px 10px rgba(0, 0, 0, 0.4),  /* Dark outer shadow (depth) */
+        -5px -5px 10px rgba(255, 255, 255, 0.2), /* Light outer shadow (lift) */
+        inset 0 0 5px rgba(0, 0, 0, 0.1); /* Inner shadow for slight texture */
+    transition: all 0.1s ease;
+    outline: none;
+}
+
+#dice-btn:active {
+    /* Pressed state */
+    transform: scale(0.98);
+    box-shadow: 
+        2px 2px 5px rgba(0, 0, 0, 0.4),  /* Smaller dark outer shadow */
+        -2px -2px 5px rgba(255, 255, 255, 0.2), /* Smaller light outer shadow */
+        inset 5px 5px 10px rgba(0, 0, 0, 0.2); /* Deep inner shadow for "pressed" look */
 }
 
 .btn-reset {
@@ -139,13 +171,14 @@
 .row {
     display: flex;
     justify-content: space-between;
-    align-items: center; 
+    align-items: center; /* Align items vertically */
     margin-top: 15px;
 }
 
 .dice-value {
     font-size: 24px;
     font-weight: bold;
+    /* Center text vertically */
     line-height: 1.2;
 }
 
@@ -155,137 +188,3 @@
     align-items: center;
     justify-content: space-between;
 }
-
-/* ------------------------------------------- */
-/* 3D DICE STYLING (Replaces old #dice-btn)    */
-/* ------------------------------------------- */
-
-.dice-container {
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-    perspective: 800px; 
-    margin: 10px;
-    outline: none;
-    border-radius: 12px;
-    
-    box-shadow: 
-        4px 4px 8px rgba(0, 0, 0, 0.4),
-        -4px -4px 8px rgba(255, 255, 255, 0.2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.1s ease;
-}
-
-.dice-container:active {
-    transform: scale(0.98);
-    box-shadow: 
-        2px 2px 5px rgba(0, 0, 0, 0.4), 
-        inset 5px 5px 10px rgba(0, 0, 0, 0.2); 
-}
-
-.dice-container.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none; 
-}
-
-.dice {
-    width: 40px;
-    height: 40px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.5s ease-out; 
-}
-
-.face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #f7f7f7; 
-    border: 1px solid #333;
-    border-radius: 8px;
-    display: grid;
-    grid-template-areas: 
-        "a . c"
-        "e g f"
-        "d . b";
-    gap: 1px;
-    padding: 4px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3); 
-}
-
-.dot {
-    display: block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #333;
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6); 
-}
-
-/* --- Positioning the Faces to form a Cube --- */
-.front  { transform: rotateY(0deg) translateZ(20px); }
-.back   { transform: rotateY(180deg) translateZ(20px); }
-.right  { transform: rotateY(90deg) translateZ(20px); }
-.left   { transform: rotateY(-90deg) translateZ(20px); }
-.top    { transform: rotateX(90deg) translateZ(20px); }
-.bottom { transform: rotateX(-90deg) translateZ(20px); }
-
-/* --- Dot Layouts --- 
-Note: Each face should be populated with 6 dots in HTML for this CSS structure to work properly. 
-The CSS handles which dots are visible and where they are placed using grid-area.
-The provided HTML structure already includes the 6 face divs for this.
-*/
-/* --- Dot Layouts (The numbers) --- */
-
-/* Initially, hide all dots */
-.face .dot {
-    display: none; 
-}
-
-/* 1 */
-.face:nth-child(1) .dot:nth-child(1) { 
-    display: block; 
-    grid-area: g; 
-} /* Center dot */
-
-/* 2 */
-.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
-.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: b; } /* Bottom-Right */
-
-/* 3 */
-.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } /* Top-Left */
-.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: g; } /* Center */
-.face:nth-child(3) .dot:nth-child(3) { display: block; grid-area: b; } /* Bottom-Right */
-
-/* 4 */
-.face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: d; } 
-.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: b; } 
-
-/* 5 */
-.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: g; } 
-.face:nth-child(5) .dot:nth-child(4) { display: block; grid-area: d; } 
-.face:nth-child(5) .dot:nth-child(5) { display: block; grid-area: b; } 
-
-/* 6 */
-.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: e; } 
-.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: f; } 
-.face:nth-child(6) .dot:nth-child(5) { display: block; grid-area: d; } 
-.face:nth-child(6) .dot:nth-child(6) { display: block; grid-area: b; } 
-
-/* --- Rotations to Show the Rolled Value --- */
-/* (Keep these rotations as they were) */
-.face-1 { transform: rotateX(0deg) rotateY(0deg); } 
-.face-2 { transform: rotateY(-90deg); } 
-.face-3 { transform: rotateX(90deg); } 
-.face-4 { transform: rotateX(-90deg); } 
-.face-5 { transform: rotateY(90deg); } 
-.face-6 { transform: rotateY(180deg); }
