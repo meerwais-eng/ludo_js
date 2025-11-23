@@ -1,3 +1,3 @@
-import { Ludo } from './ludo/Ludo.js';
+import { Ludo } from './Ludo.js';
 
 const ludo = new Ludo();

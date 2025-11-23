@@ -67,7 +67,7 @@
 
 /* NEW: P4 (Blue/Purple) */
 [player-id="P4"].player-piece {
-    background-color: #8c00b5; 
+    background-color: #e30f12; 
 }
 
 .player-base {
@@ -86,14 +86,14 @@
 /* NEW: P2 base moved to Top Left */
 .player-bases [player-id="P2"].player-base {
     top: 0;
-    left: 0;
+    right: 0;
     border-color: #049645;
 }
 
 /* NEW: P3 base in Top Right */
 .player-bases [player-id="P3"].player-base {
     top: 0;
-    right: 0;
+    left: 0;
     border-color: #e7a712;
 }
 
@@ -101,7 +101,7 @@
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #7b0496;
+    border-color: #e30f12;
 }
 
 
