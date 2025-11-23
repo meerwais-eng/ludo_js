@@ -55,11 +55,11 @@ export class UI {
     }
 
     static setTurn(index) {
-        // Use window.PLAYERS as Ludo.js dynamically sets it via constants.setPlayers
-        const activePlayers = window.PLAYERS || PLAYERS; 
+        // Use the imported PLAYERS array
+        const activePlayers = PLAYERS; 
         
         if(index < 0 || index >= activePlayers.length) {
-            console.error('index out of bound or PLAYERS array not set!');
+            console.error('index out of bound!');
             return;
         }
         
@@ -87,14 +87,14 @@ export class UI {
         if (activeBase) activeBase.classList.add('highlight');
     }
 
-    // UPDATED to use .dice-container class
     static enableDice() {
-        if (diceButtonElement) diceButtonElement.classList.remove('disabled');
+        const diceContainer = document.querySelector('.dice-container');
+        if (diceContainer) diceContainer.classList.remove('disabled');
     }
 
-    // UPDATED to use .dice-container class
     static disableDice() {
-        if (diceButtonElement) diceButtonElement.classList.add('disabled');
+        const diceContainer = document.querySelector('.dice-container');
+        if (diceContainer) diceContainer.classList.add('disabled');
     }
 
     static highlightPieces(player, pieces) {
@@ -120,7 +120,7 @@ export class UI {
             diceElement.classList.add(`face-${value}`); 
         }
         
-        // Hide the dice value text display (optional, based on your index.html)
+        // Use the text value display as a fallback or for debugging
         const diceValueElement = document.querySelector('.dice-value');
         if (diceValueElement) diceValueElement.innerText = value;
     }
