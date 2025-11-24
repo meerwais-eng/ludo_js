@@ -25,7 +25,7 @@
     width: 3%;
     height: 3%;
     border: 2px solid;
-    border-radius: 50%; 
+    border-radius: 50%; /* Changed to 50% for a round piece */
     position: absolute;
     transform: translate(50%, 50%);
     transition: all .2s;
@@ -57,26 +57,38 @@
     }
 }
 
-/* Player Colors */
+/* ------------------------------------------------------------- */
+/* PLAYER COLORS (FIXED for standard Ludo colors and consistency) */
+/* ------------------------------------------------------------- */
+
+/* P1 (Bottom-Left) - Red */
 [player-id="P1"].player-piece {
-    background-color: #2eafff; /* Blue */
-}
-
-/* P2 is yellow/orange based on existing snippets */
-[player-id="P2"].player-piece {
-    background-color: #ffc900; 
-}
-
-/* P3 (Top Left) is green based on existing snippets */
-[player-id="P3"].player-piece {
-    background-color: #00b550; 
-}
-
-/* P4 (Bottom Right) is red based on existing snippets */
-[player-id="P4"].player-piece {
     background-color: #e70a0a; 
+    border-color: #b50707;
 }
 
+/* P2 (Top-Right) - Green */
+[player-id="P2"].player-piece {
+    background-color: #00b550; 
+    border-color: #049645;
+}
+
+/* P3 (Top-Left) - Yellow */
+[player-id="P3"].player-piece {
+    background-color: #ffc900; 
+    border-color: #e7a712;
+}
+
+/* P4 (Bottom-Right) - Blue */
+[player-id="P4"].player-piece {
+    background-color: #2eafff; 
+    border-color: #1295e7;
+}
+
+
+/* ------------------------------------------------------------- */
+/* PLAYER BASES (FIXED) */
+/* ------------------------------------------------------------- */
 
 .player-base {
     width: 40%;
@@ -85,167 +97,158 @@
     position: absolute;
 }
 
+/* P1 base in Bottom Left - Red */
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7; /* Blue Base */
+    border-color: #e70a0a; 
 }
 
+/* P2 base in Top Right - Green */
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #ffc900; /* Yellow Base */
+    border-color: #049645; 
 }
 
-/* NEW: P3 base in Top Left */
+/* P3 base in Top Left - Yellow */
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
-    border-color: #049645; /* Green Base */
+    border-color: #ffc900; 
 }
 
-/* NEW: P4 base in Bottom Right */
+/* P4 base in Bottom Right - Blue */
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; /* Red Base */
+    border-color: #1295e7; 
 }
 
 
 .player-base.highlight {
+    /* Blink active players are not working properly - animation confirmed */
     animation: border-blink .7s infinite ease-in-out;
 }
 
 @keyframes border-blink {
     50% {
-        filter: brightness(1.5);
+        border-color: transparent;
     }
 }
 
 
 /* ------------------------------------------------------------- */
-/* 3D DICE STYLES */
+/* DICE STYLES (FIXED: Dot visibility logic) */
 /* ------------------------------------------------------------- */
 
-/* Dice Button */
-.btn-dice {
-    position: relative;
+/* Dice Container and Dot Grid Setup */
+.dice-container {
     width: 60px;
     height: 60px;
     perspective: 500px;
-    background: none;
-    border: none;
-    padding: 0;
 }
 
-/* Dice Container */
-.dice-container {
+.dice {
     width: 100%;
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
+    transition: transform 1s ease-out;
 }
 
-/* Dice Cube */
-.dice {
+.dice .face {
+    position: absolute;
     width: 100%;
     height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 1.5s ease-out;
-    position: absolute;
-}
-
-/* Dice Faces */
-.face {
-    position: absolute;
-    width: 60px;
-    height: 60px;
     background: #fff;
-    border: 1px solid #000;
+    border: 1px solid #ccc;
     display: grid;
-    padding: 5px;
-    gap: 5px;
-    /* Grid layout for dots: a b c d e f g (center is d) */
+    padding: 10%;
+    /* Use a 3x3 grid for positioning dots */
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+    /* Define areas for clarity: corners (a, b, c, d), center (g) */
     grid-template-areas: 
         "a . c" 
-        "b d f" 
-        "g . e";
-    
-    backface-visibility: hidden;
+        ". g ." 
+        "d . b";
 }
 
-.dot {
+/* Define face rotations */
+.face.front { transform: rotateY(0deg) translateZ(30px); }
+.face.back { transform: rotateY(180deg) translateZ(30px); }
+.face.right { transform: rotateY(90deg) translateZ(30px); }
+.face.left { transform: rotateY(-90deg) translateZ(30px); }
+.face.top { transform: rotateX(90deg) translateZ(30px); }
+.face.bottom { transform: rotateX(-90deg) translateZ(30px); }
+
+/* Dot Styles */
+.dice .face .dot {
     width: 8px;
     height: 8px;
     background: #000;
     border-radius: 50%;
-    display: none; /* Hidden by default, shown via CSS for the correct number */
-    place-self: center;
+    align-self: center;
+    justify-self: center;
+    display: none; /* Hide all dots by default */
 }
 
-/* Face positioning (initial state: showing 1) */
-.front  { transform: rotateY(0deg) translateZ(30px); }
-.back   { transform: rotateY(180deg) translateZ(30px); }
-.right  { transform: rotateY(90deg) translateZ(30px); }
-.left   { transform: rotateY(-90deg) translateZ(30px); }
-.top    { transform: rotateX(90deg) translateZ(30px); }
-.bottom { transform: rotateX(-90deg) translateZ(30px); }
+/* Dot positions mapped to nth-child (assuming 6 dots are present on all faces in HTML) */
+.dice .face .dot:nth-child(1) { grid-area: a; } /* Top-Left */
+.dice .face .dot:nth-child(2) { grid-area: c; } /* Top-Right */
+.dice .face .dot:nth-child(3) { grid-area: d; } /* Bottom-Left */
+.dice .face .dot:nth-child(4) { grid-area: b; } /* Bottom-Right */
+.dice .face .dot:nth-child(5) { grid-area: g; } /* Center */
+.dice .face .dot:nth-child(6) { grid-area: . ; } /* Placeholder for middle edge */
 
+/* DICE ROLL VISIBILITY FIX (Using face-N classes applied by UI.js) */
+/* The logic below makes the dots visible based on the rotation class */
 
-/* DICE ROLL CLASSES (Rotations) */
+/* 1: Center */
+.dice.face-1 .dot:nth-child(5) { display: block; } 
 
-/* Show face 1 (Front) - Default / Initial state (0 rotation) */
-.face-1 { transform: translateZ(-30px) rotateX(0deg) rotateY(0deg); } 
-/* Show face 2 (Back) */
-.face-2 { transform: translateZ(-30px) rotateX(0deg) rotateY(180deg); }
-/* Show face 3 (Right) */
-.face-3 { transform: translateZ(-30px) rotateX(0deg) rotateY(-90deg); }
-/* Show face 4 (Left) */
-.face-4 { transform: translateZ(-30px) rotateX(0deg) rotateY(90deg); }
-/* Show face 5 (Top) */
-.face-5 { transform: translateZ(-30px) rotateX(-90deg) rotateY(0deg); }
-/* Show face 6 (Bottom) */
-.face-6 { transform: translateZ(-30px) rotateX(90deg) rotateY(0deg); }
+/* 2: Top-Left, Bottom-Right */
+.dice.face-2 .dot:nth-child(1),
+.dice.face-2 .dot:nth-child(4) { display: block; }
 
+/* 3: Top-Left, Center, Bottom-Right */
+.dice.face-3 .dot:nth-child(1),
+.dice.face-3 .dot:nth-child(4),
+.dice.face-3 .dot:nth-child(5) { display: block; }
 
-/* DOTS VISIBILITY: These select the Nth face (using the roll order, not the CSS transform order) */
+/* 4: All corners (TL, TR, BL, BR) */
+.dice.face-4 .dot:nth-child(1),
+.dice.face-4 .dot:nth-child(2),
+.dice.face-4 .dot:nth-child(3),
+.dice.face-4 .dot:nth-child(4) { display: block; }
 
-/* 1. Roll 1: Face 1 (Front) must show 1 dot */
-.face:nth-child(1) .dot:nth-child(1) { display: block; grid-area: d; } 
+/* 5: All corners + Center */
+.dice.face-5 .dot:nth-child(1),
+.dice.face-5 .dot:nth-child(2),
+.dice.face-5 .dot:nth-child(3),
+.dice.face-5 .dot:nth-child(4),
+.dice.face-5 .dot:nth-child(5) { display: block; }
 
-/* 2. Roll 2: Face 3 (Right) must show 2 dots */
-.face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: e; } 
+/* 6: All corners + Middle-Left, Middle-Right */
+/* Note: Since we only have 5 explicit grid areas, we use the sixth dot and assign it a middle-edge area if needed, 
+   or redefine the grid areas for more precise 6-dot placement. Sticking to the 5-dot configuration for simplicity 
+   and using the corners and one extra for 6. */
 
-/* 3. Roll 3: Face 5 (Top) must show 3 dots */
-.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: d; } 
-.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: e; } 
-
-/* 4. Roll 4: Face 4 (Left) must show 4 dots */
-.face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: g; } 
-.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: e; } 
-
-
-/* 5. Roll 5: Face 6 (Bottom) must show 5 dots */
-.face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: d; } 
-.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: g; } 
-.face:nth-child(6) .dot:nth-child(5) { display: block; grid-area: e; } 
-
-/* 6. Roll 6: Face 2 (Back) must show 6 dots */
-.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(2) .dot:nth-child(3) { display: block; grid-area: g; } 
-.face:nth-child(2) .dot:nth-child(4) { display: block; grid-area: e; } 
-.face:nth-child(2) .dot:nth-child(5) { display: block; grid-area: b; } 
-.face:nth-child(2) .dot:nth-child(6) { display: block; grid-area: f; } 
-
+/* Redefining grid areas for better 6-dot placement for '6' (middle-edges) */
+.dice.face-6 .face {
+    grid-template-areas: 
+        "a f c" 
+        "g . h" 
+        "d e b";
+}
+/* Reassigning dot positions for '6' */
+.dice.face-6 .dot:nth-child(1) { grid-area: a; display: block; } /* TL */
+.dice.face-6 .dot:nth-child(2) { grid-area: c; display: block; } /* TR */
+.dice.face-6 .dot:nth-child(3) { grid-area: d; display: block; } /* BL */
+.dice.face-6 .dot:nth-child(4) { grid-area: b; display: block; } /* BR */
+.dice.face-6 .dot:nth-child(5) { grid-area: f; display: block; } /* Top-Mid */
+.dice.face-6 .dot:nth-child(6) { grid-area: e; display: block; } /* Bottom-Mid */
 
 /* ------------------------------------------------------------- */
 /* FOOTER/CONTROLS STYLES (Existing) */
@@ -276,26 +279,26 @@
 }
 
 .btn-dice {
-    background-color: #f44336;
+    background-color: #007bff;
     color: white;
+    min-width: 60px; /* Ensure button can fit the dice */
+    padding: 5px 10px;
+    display: flex; /* Adjust inner contents */
+    align-items: center;
+    justify-content: center;
 }
 
-.btn-reset {
-    background-color: #4CAF50;
-    color: white;
-}
-
-#dice-btn:disabled {
-    opacity: 0.5;
+.btn-dice:disabled {
+    background-color: #ccc;
     cursor: not-allowed;
 }
 
-.active-player {
-    text-align: center;
-    font-size: 1.2em;
+.btn-reset {
+    background-color: #dc3545;
+    color: white;
 }
 
-.active-player span {
+.dice-value {
+    font-size: 24px;
     font-weight: bold;
-    color: #f44336;
 }

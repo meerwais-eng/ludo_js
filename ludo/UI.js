@@ -2,10 +2,10 @@ import { COORDINATES_MAP, PLAYERS, STEP_LENGTH, ALL_PLAYERS, TEAM_PLAYERS } from
 
 const diceButtonElement = document.querySelector('#dice-btn'); 
 const playerPiecesElements = {
-    P1: document.querySelectorAll('[player-id=\"P1\"].player-piece'),
-    P2: document.querySelectorAll('[player-id=\"P2\"].player-piece'),
-    P3: document.querySelectorAll('[player-id=\"P3\"].player-piece'), 
-    P4: document.querySelectorAll('[player-id=\"P4\"].player-piece'), 
+    P1: document.querySelectorAll('[player-id="P1"].player-piece'),
+    P2: document.querySelectorAll('[player-id="P2"].player-piece'),
+    P3: document.querySelectorAll('[player-id="P3"].player-piece'), 
+    P4: document.querySelectorAll('[player-id="P4"].player-piece'), 
 }
 const playerCountElement = document.querySelector('#player-count'); 
 
@@ -41,7 +41,7 @@ export class UI {
     }
 
     /**
-     * @param {string} player 
+     * * @param {string} player 
      * @param {Number} piece 
      * @param {Number} newPosition 
      */
@@ -70,12 +70,14 @@ export class UI {
         const activePlayerSpan = document.querySelector('.active-player span');
         if (activePlayerSpan) activePlayerSpan.innerText = player;
 
+        // Unhighlight previous base
         const activePlayerBase = document.querySelector('.player-base.highlight');
         if(activePlayerBase) {
             activePlayerBase.classList.remove('highlight');
         }
-        // highlight
-        const newActiveBase = document.querySelector(`[player-id=\"${player}\"].player-base`);
+        
+        // Highlight current player's base (handles the blink)
+        const newActiveBase = document.querySelector(`[player-id="${player}"].player-base`);
         if (newActiveBase) newActiveBase.classList.add('highlight');
     }
 
@@ -88,7 +90,7 @@ export class UI {
     }
 
     /**
-     * @param {string} player 
+     * * @param {string} player 
      * @param {Number[]} pieces 
      */
     static highlightPieces(player, pieces) {
@@ -104,7 +106,7 @@ export class UI {
         })
     }
 
-    // UPDATED to rotate the 3D dice model
+    // UPDATED to rotate the 3D dice model (fixes dot display)
     static setDiceValue(value) {
         const diceElement = document.querySelector('#dice');
         if (diceElement) {
@@ -114,29 +116,39 @@ export class UI {
             diceElement.classList.add(`face-${value}`); 
         }
         
-        // Hide the dice value text display (optional, based on your index.html)
+        // Hide the dice value text display
         const diceValueElement = document.querySelector('.dice-value');
         if (diceValueElement) diceValueElement.innerText = value;
     }
     
-    // NEW: Function to hide/show pieces and bases for inactive players
+    // Function to hide/show pieces and bases for inactive players
     static setGameVisibility(activePlayers) {
         // Hide all pieces and bases initially
         ALL_PLAYERS.forEach(player => {
-            const base = document.querySelector(`[player-id=\"${player}\"].player-base`);
+            const base = document.querySelector(`[player-id="${player}"].player-base`);
             if (base) base.style.display = 'none';
-            playerPiecesElements[player].forEach(piece => {
-                if (piece) piece.style.display = 'none';
-            });
+            if (playerPiecesElements[player]) {
+                playerPiecesElements[player].forEach(piece => {
+                    if (piece) piece.style.display = 'none';
+                });
+            }
         });
         
         // Show only the active players' elements
         activePlayers.forEach(player => {
-            const base = document.querySelector(`[player-id=\"${player}\"].player-base`);
+            const base = document.querySelector(`[player-id="${player}"].player-base`);
             if (base) base.style.display = 'block';
-            playerPiecesElements[player].forEach(piece => {
-                if (piece) piece.style.display = 'block';
-            });
+            if (playerPiecesElements[player]) {
+                playerPiecesElements[player].forEach(piece => {
+                    if (piece) piece.style.display = 'block';
+                });
+            }
         });
+    }
+
+    static showToast(message, type = 'blue') {
+        // A simple alert for quick feedback (can be replaced by a proper UI toast)
+        // console.log(`[${type.toUpperCase()}] ${message}`);
+        alert(message);
     }
 }
