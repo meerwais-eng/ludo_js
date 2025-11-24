@@ -12,17 +12,13 @@ export const COORDINATES_MAP = {
     50: [7, 14], // P1 (Blue/Bottom-Left) Turning Point
     51: [6, 14],
 
-    // HOME ENTRANCE POSITIONS
-    // P1 (Bottom Left)
-    100: [7, 13], 101: [7, 12], 102: [7, 11], 103: [7, 10], 104: [7, 9],
-    // P2 (Top Right)
-    200: [1, 7], 201: [2, 7], 202: [3, 7], 203: [4, 7], 204: [5, 7],
-    // P3 (Top Left)
-    300: [7, 1], 301: [7, 2], 302: [7, 3], 303: [7, 4], 304: [7, 5],
-    // P4 (Bottom Right)
-    400: [13, 7], 401: [12, 7], 402: [11, 7], 403: [10, 7], 404: [9, 7],
+    // HOME ENTRANCE (P1 - Blue, P2 - Green, P3 - Yellow, P4 - Red)
+    100: [7, 13], 101: [7, 12], 102: [7, 11], 103: [7, 10], 104: [7, 9], 105: [7, 8],
+    200: [13, 7], 201: [12, 7], 202: [11, 7], 203: [10, 7], 204: [9, 7], 205: [8, 7],
+    300: [1, 7], 301: [2, 7], 302: [3, 7], 303: [4, 7], 304: [5, 7], 305: [6, 7],
+    400: [7, 1], 401: [7, 2], 402: [7, 3], 403: [7, 4], 404: [7, 5], 405: [7, 6],
 
-    // BASE POSITIONS
+    // BASE POSITIONS (Approximate Center of the base quarter)
     // P1 (Bottom Left)
     500: [1.5, 10.58], 501: [3.57, 10.58], 502: [1.5, 12.43], 503: [3.57, 12.43],
     // P2 (Top Right)
@@ -33,15 +29,32 @@ export const COORDINATES_MAP = {
     800: [10.5, 10.58], 801: [12.54, 10.58], 802: [10.5, 12.43], 803: [12.54, 12.43],
 };
 
-export const STEP_LENGTH = 6.66; // Percentage length for one step (100 / 15 columns/rows)
+export const STEP_LENGTH = 6.66; // 100% / 15 squares
 
-export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
-// Use let so it can be updated by the Ludo class
+export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4'];
+// Use 'let' so it can be updated by the Ludo class
 export let PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
 
 export const setPlayers = (count) => {
     PLAYERS = ALL_PLAYERS.slice(0, count);
 }
+
+// Team Structure
+export const TEAM_PLAYERS = {
+    A: ['P1', 'P2'], // Team A: Bottom-Left (P1) and Top-Right (P2)
+    B: ['P4', 'P3'], // Team B: Bottom-Right (P4) and Top-Left (P3)
+    
+    getTeam: (player) => {
+        if (TEAM_PLAYERS.A.includes(player)) return 'A';
+        if (TEAM_PLAYERS.B.includes(player)) return 'B';
+        return null;
+    },
+    getTeammate: (player) => {
+        const team = TEAM_PLAYERS.getTeam(player);
+        if (!team) return null;
+        return TEAM_PLAYERS[team].find(p => p !== player); 
+    }
+};
 
 export const BASE_POSITIONS = {
     P1: [500, 501, 502, 503], P2: [600, 601, 602, 603],
@@ -64,31 +77,16 @@ export const HOME_POSITIONS = {
 }
 
 export const TURNING_POINTS = {
-    P1: 50, P2: 24, P3: 11, P4: 37, 
+    P1: 50, P2: 24, P3: 11, P4: 37,
 }
 
+// Global safe spots (all Star/Safe positions on the main track)
+// [0, 8, 13, 21, 26, 34, 39, 47] - Assuming positions 0, 8, 13, 21, 26, 34, 39, 47 are safe spots (stars)
 export const SAFE_POSITIONS = [0, 8, 13, 21, 26, 34, 39, 47];
 
+// Game State Enum
 export const STATE = {
     DICE_NOT_ROLLED: 'DICE_NOT_ROLLED',
     DICE_ROLLED: 'DICE_ROLLED',
-    PIECE_MOVE_IN_PROGRESS: 'PIECE_MOVE_IN_PROGRESS',
     GAME_OVER: 'GAME_OVER',
 }
-
-// Team Structure
-export const TEAM_PLAYERS = {
-    A: ['P1', 'P2'], // Team A: Bottom-Left and Top-Right
-    B: ['P4', 'P3'], // Team B: Bottom-Right and Top-Left
-    
-    getTeam: (player) => {
-        if (TEAM_PLAYERS.A.includes(player)) return 'A';
-        if (TEAM_PLAYERS.B.includes(player)) return 'B';
-        return null;
-    },
-    getTeammate: (player) => {
-        const team = TEAM_PLAYERS.getTeam(player);
-        if (!team) return null;
-        return TEAM_PLAYERS[team].find(p => p !== player); 
-    }
-};

@@ -38,11 +38,13 @@
         inset 0 0 10px rgba(0, 0, 0, 0.6),    
         3px 3px 5px rgba(0, 0, 0, 0.4);       
 }
+
 .player-piece.highlight {
     cursor: pointer;
     border: 2px dashed;
     animation: spin 1s infinite linear;
 }
+
 @keyframes spin {
     0% {
         transform: translate(50%, 50%) rotate(0deg);
@@ -55,25 +57,27 @@
     }
 }
 
-/* PLAYER PIECE COLORS */
+/* Player Colors */
 [player-id="P1"].player-piece {
     background-color: #2eafff; /* Blue */
 }
 
+/* P2 is yellow/orange based on existing snippets */
 [player-id="P2"].player-piece {
-    background-color: #ffc900; /* Yellow */
+    background-color: #ffc900; 
 }
 
+/* P3 (Top Left) is green based on existing snippets */
 [player-id="P3"].player-piece {
-    background-color: #e70a0a; /* Red */
+    background-color: #00b550; 
 }
 
+/* P4 (Bottom Right) is red based on existing snippets */
 [player-id="P4"].player-piece {
-    background-color: #00b550; /* Green */
+    background-color: #e70a0a; 
 }
 
 
-/* PLAYER BASE STYLES */
 .player-base {
     width: 40%;
     height: 40%;
@@ -90,164 +94,157 @@
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #e7a712; /* Yellow Base */
+    border-color: #ffc900; /* Yellow Base */
 }
 
+/* NEW: P3 base in Top Left */
 .player-bases [player-id="P3"].player-base {
     top: 0;
     left: 0;
-    border-color: #e70a0a; /* Red Base */
-}
-
-.player-bases [player-id="P4"].player-base {
-    bottom: 0;
-    right: 0;
     border-color: #049645; /* Green Base */
 }
 
-/* BASE BLINKING/HIGHLIGHT FOR ACTIVE PLAYER */
+/* NEW: P4 base in Bottom Right */
+.player-bases [player-id="P4"].player-base {
+    bottom: 0;
+    right: 0;
+    border-color: #e70a0a; /* Red Base */
+}
+
+
 .player-base.highlight {
     animation: border-blink .7s infinite ease-in-out;
 }
 
 @keyframes border-blink {
     50% {
-        opacity: 0.5;
+        filter: brightness(1.5);
     }
 }
 
 
 /* ------------------------------------------------------------- */
-/* TURN INDICATION STYLES (Dimming and Blinking) */
+/* 3D DICE STYLES */
 /* ------------------------------------------------------------- */
 
-/* This class dims the area for inactive players. */
-.player-base.inactive-area {
-    opacity: 0.4;
-    transition: opacity 0.3s ease-in-out;
-    animation: none !important; 
-}
-
-/* Also dim the pieces of the inactive player */
-[player-id].player-piece.inactive-area {
-    opacity: 0.4;
-    transition: opacity 0.3s ease-in-out;
-    animation: none !important;
-}
-
-/* Ensure the active player's base and pieces are fully visible (opacity 1) */
-.player-base:not(.inactive-area),
-[player-id].player-piece:not(.inactive-area) {
-    opacity: 1;
-}
-
-/* ------------------------------------------------------------- */
-/* DICE STYLES (3D CUBE) */
-/* ------------------------------------------------------------- */
-
-.dice-container {
-    width: 50px; 
-    height: 50px;
-    margin: 0 auto;
+/* Dice Button */
+.btn-dice {
     position: relative;
-    perspective: 800px;
-    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    perspective: 500px;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
+/* Dice Container */
+.dice-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+/* Dice Cube */
 .dice {
     width: 100%;
     height: 100%;
-    position: absolute;
     transform-style: preserve-3d;
-    transition: transform 1s;
-    transform: translateZ(-25px); 
+    transition: transform 1.5s ease-out;
+    position: absolute;
 }
 
-/* Base style for all faces */
-.dice .face {
+/* Dice Faces */
+.face {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: #fff;
-    border: 1px solid #333;
-    border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    border: 1px solid #000;
     display: grid;
+    padding: 5px;
+    gap: 5px;
+    /* Grid layout for dots: a b c d e f g (center is d) */
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    padding: 5px;
-    box-sizing: border-box;
-    /* Grid areas for dots: a c = top corners, d b = bottom corners, e f = middle side, g = center */
-    grid-template-areas:
-        "a . c"
-        "e g f"
-        "d . b";
+    grid-template-areas: 
+        "a . c" 
+        "b d f" 
+        "g . e";
+    
+    backface-visibility: hidden;
 }
 
-/* Face Rotations (assuming 50px dice size, translateZ(25px)) */
-.dice .face.front { transform: rotateY(0deg) translateZ(25px); }
-.dice .face.back { transform: rotateY(180deg) translateZ(25px); }
-.dice .face.right { transform: rotateY(90deg) translateZ(25px); }
-.dice .face.left { transform: rotateY(-90deg) translateZ(25px); }
-.dice .face.top { transform: rotateX(90deg) translateZ(25px); }
-.dice .face.bottom { transform: rotateX(-90deg) translateZ(25px); }
-
-/* Dice Roll Rotation Classes */
-.dice.face-1 { transform: translateZ(-25px) rotateX(0deg) rotateY(0deg); } 
-.dice.face-2 { transform: translateZ(-25px) rotateX(-90deg) rotateY(0deg); } /* Shows Top face (5th child) */
-.dice.face-3 { transform: translateZ(-25px) rotateX(0deg) rotateY(-90deg); } /* Shows Right face (3rd child) */
-.dice.face-4 { transform: translateZ(-25px) rotateX(90deg) rotateY(0deg); } /* Shows Bottom face (6th child) */
-.dice.face-5 { transform: translateZ(-25px) rotateX(0deg) rotateY(90deg); } /* Shows Left face (4th child) */
-.dice.face-6 { transform: translateZ(-25px) rotateX(0deg) rotateY(180deg); } /* Shows Back face (2nd child) */
-
-
-/* Dot Style */
-.dice .face .dot {
-    width: 10px;
-    height: 10px;
-    background-color: #333;
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #000;
     border-radius: 50%;
-    display: none; /* Initially hide all dots */
-    align-self: center;
-    justify-self: center;
+    display: none; /* Hidden by default, shown via CSS for the correct number */
+    place-self: center;
 }
 
-/* ------------------------------------------------------------- */
-/* Dot Visibility for each face (Pips) - **FIXED** */
-/* The nth-child must match the dot count for that face's position in the HTML */
-/* ------------------------------------------------------------- */
+/* Face positioning (initial state: showing 1) */
+.front  { transform: rotateY(0deg) translateZ(30px); }
+.back   { transform: rotateY(180deg) translateZ(30px); }
+.right  { transform: rotateY(90deg) translateZ(30px); }
+.left   { transform: rotateY(-90deg) translateZ(30px); }
+.top    { transform: rotateX(90deg) translateZ(30px); }
+.bottom { transform: rotateX(-90deg) translateZ(30px); }
 
-/* 1. Face 1 (Front): Shows 1 dot */
-.face:nth-child(1) .dot:nth-child(1) { display: block; grid-area: g; }
 
-/* 2. Face 2 (Back): Shows 6 dots */
-.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: c; } 
-.face:nth-child(2) .dot:nth-child(3) { display: block; grid-area: e; } 
-.face:nth-child(2) .dot:nth-child(4) { display: block; grid-area: f; } 
-.face:nth-child(2) .dot:nth-child(5) { display: block; grid-area: d; } 
-.face:nth-child(2) .dot:nth-child(6) { display: block; grid-area: b; }
+/* DICE ROLL CLASSES (Rotations) */
 
-/* 3. Face 3 (Right): Shows 3 dots */
+/* Show face 1 (Front) - Default / Initial state (0 rotation) */
+.face-1 { transform: translateZ(-30px) rotateX(0deg) rotateY(0deg); } 
+/* Show face 2 (Back) */
+.face-2 { transform: translateZ(-30px) rotateX(0deg) rotateY(180deg); }
+/* Show face 3 (Right) */
+.face-3 { transform: translateZ(-30px) rotateX(0deg) rotateY(-90deg); }
+/* Show face 4 (Left) */
+.face-4 { transform: translateZ(-30px) rotateX(0deg) rotateY(90deg); }
+/* Show face 5 (Top) */
+.face-5 { transform: translateZ(-30px) rotateX(-90deg) rotateY(0deg); }
+/* Show face 6 (Bottom) */
+.face-6 { transform: translateZ(-30px) rotateX(90deg) rotateY(0deg); }
+
+
+/* DOTS VISIBILITY: These select the Nth face (using the roll order, not the CSS transform order) */
+
+/* 1. Roll 1: Face 1 (Front) must show 1 dot */
+.face:nth-child(1) .dot:nth-child(1) { display: block; grid-area: d; } 
+
+/* 2. Roll 2: Face 3 (Right) must show 2 dots */
 .face:nth-child(3) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: g; } 
-.face:nth-child(3) .dot:nth-child(3) { display: block; grid-area: b; } 
+.face:nth-child(3) .dot:nth-child(2) { display: block; grid-area: e; } 
 
-/* 4. Face 4 (Left): Shows 5 dots */
+/* 3. Roll 3: Face 5 (Top) must show 3 dots */
+.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: d; } 
+.face:nth-child(5) .dot:nth-child(3) { display: block; grid-area: e; } 
+
+/* 4. Roll 4: Face 4 (Left) must show 4 dots */
 .face:nth-child(4) .dot:nth-child(1) { display: block; grid-area: a; } 
 .face:nth-child(4) .dot:nth-child(2) { display: block; grid-area: c; } 
 .face:nth-child(4) .dot:nth-child(3) { display: block; grid-area: g; } 
-.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: d; } 
-.face:nth-child(4) .dot:nth-child(5) { display: block; grid-area: b; } 
+.face:nth-child(4) .dot:nth-child(4) { display: block; grid-area: e; } 
 
-/* 5. Face 5 (Top): Shows 2 dots */
-.face:nth-child(5) .dot:nth-child(1) { display: block; grid-area: a; } 
-.face:nth-child(5) .dot:nth-child(2) { display: block; grid-area: b; } 
 
-/* 6. Face 6 (Bottom): Shows 4 dots */
+/* 5. Roll 5: Face 6 (Bottom) must show 5 dots */
 .face:nth-child(6) .dot:nth-child(1) { display: block; grid-area: a; } 
 .face:nth-child(6) .dot:nth-child(2) { display: block; grid-area: c; } 
 .face:nth-child(6) .dot:nth-child(3) { display: block; grid-area: d; } 
-.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: b; }
+.face:nth-child(6) .dot:nth-child(4) { display: block; grid-area: g; } 
+.face:nth-child(6) .dot:nth-child(5) { display: block; grid-area: e; } 
+
+/* 6. Roll 6: Face 2 (Back) must show 6 dots */
+.face:nth-child(2) .dot:nth-child(1) { display: block; grid-area: a; } 
+.face:nth-child(2) .dot:nth-child(2) { display: block; grid-area: c; } 
+.face:nth-child(2) .dot:nth-child(3) { display: block; grid-area: g; } 
+.face:nth-child(2) .dot:nth-child(4) { display: block; grid-area: e; } 
+.face:nth-child(2) .dot:nth-child(5) { display: block; grid-area: b; } 
+.face:nth-child(2) .dot:nth-child(6) { display: block; grid-area: f; } 
 
 
 /* ------------------------------------------------------------- */
@@ -279,40 +276,26 @@
 }
 
 .btn-dice {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.btn-reset {
     background-color: #f44336;
     color: white;
 }
 
-.dice-value {
-    font-size: 24px;
-    font-weight: bold;
-    display: none; 
+.btn-reset {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#dice-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .active-player {
-    font-size: 18px;
-    margin: 0;
+    text-align: center;
+    font-size: 1.2em;
 }
+
 .active-player span {
     font-weight: bold;
-    color: #4CAF50;
-}
-.player-select {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.player-select label {
-    font-weight: bold;
-}
-
-.player-select select {
-    padding: 5px;
-    border-radius: 5px;
+    color: #f44336;
 }
