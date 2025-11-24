@@ -37,7 +37,7 @@ export const COORDINATES_MAP = {
 
 export const STEP_LENGTH = 6.66; // Percentage size of a single step cell
 
-export const ALL_PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
+export const ALL_PLAYERS = ['P1', 'P3', 'P2', 'P4']; 
 // PLAYERS is declared with `let` so it can be updated by the Ludo class
 export let PLAYERS = ['P1', 'P2', 'P3', 'P4']; 
 

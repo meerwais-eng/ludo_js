@@ -81,7 +81,7 @@
 
 /* P4 (Bottom-Right) - Blue */
 [player-id="P4"].player-piece {
-    background-color: #e70a0a; 
+    background-color: #ff5353; 
     border-color: #b50707;
 }
 
@@ -122,7 +122,7 @@
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #e70a0a; 
+    border-color: #ff5353; 
 }
 
 

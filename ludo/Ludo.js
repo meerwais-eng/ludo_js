@@ -53,25 +53,27 @@ export class Ludo {
     
     listenPlayerCountChange() {
         UI.listenPlayerCountChange((event) => {
-            const playerCount = parseInt(event.target.value);
-            this.updatePlayerCount(playerCount);
+            this.updatePlayerCount(event.target.value);
             this.resetGame();
-        });
+        })
     }
 
     updatePlayerCount(count) {
-        setPlayers(count); // Update the global PLAYERS array
-        this.isTeamMode = (count === 4);
-        UI.setGameVisibility(PLAYERS); // Show/Hide bases and pieces
+        count = parseInt(count);
+        setPlayers(count); // Update the PLAYERS array in constants.js
+        this.currentPositions = {};
+        PLAYERS.forEach(player => {
+            this.currentPositions[player] = [];
+        })
+
+        // Update UI visibility
+        UI.setGameVisibility(PLAYERS);
     }
 
     listenDiceClick() {
         UI.listenDiceClick(() => {
-            this.diceValue = this.rollDice();
-            this.state = STATE.DICE_ROLLED;
-
-            this.movePieceByDice();
-        })
+            this.rollDice();
+        });
     }
 
     listenResetClick() {
@@ -81,140 +83,139 @@ export class Ludo {
     }
 
     listenPieceClick() {
-        UI.listenPieceClick((event) => {
-            const pieceElement = event.target;
-
-            if(!pieceElement.classList.contains('player-piece') || !pieceElement.classList.contains('highlight')) {
-                return;
+        UI.listenPieceClick(event => {
+            const pieceElement = event.target.closest('.player-piece.highlight');
+            
+            if(pieceElement) {
+                const player = pieceElement.getAttribute('player-id');
+                const piece = parseInt(pieceElement.getAttribute('piece'));
+                
+                if(player === this.currentPlayer) {
+                    this.movePiece(player, piece, this.diceValue);
+                }
             }
-
-            const player = pieceElement.getAttribute('player-id');
-            const piece = parseInt(pieceElement.getAttribute('piece'));
-
-            this.movePiece(player, piece);
         })
     }
 
     resetGame() {
         this.currentPositions = {};
-
-        // Initialize positions for all active players
         PLAYERS.forEach(player => {
-            this.currentPositions[player] = BASE_POSITIONS[player].slice();
-        });
-
-        // Set pieces to base positions in UI
-        PLAYERS.forEach(player => {
+            this.currentPositions[player] = [];
             [0, 1, 2, 3].forEach(piece => {
-                UI.setPiecePosition(player, piece, BASE_POSITIONS[player][piece]);
+                this.setPiecePosition(player, piece, BASE_POSITIONS[player][piece]);
             })
-        });
+        })
 
-        this.diceValue = 1;
         this.turn = 0;
+        this.diceValue = 1; // Initial dummy value
         this.state = STATE.DICE_NOT_ROLLED;
     }
 
-    rollDice() {
-        return Math.floor(Math.random() * 6) + 1;
+    get currentPlayer() {
+        return PLAYERS[this.turn % PLAYERS.length];
     }
 
-    setPiecePosition(player, piece, position) {
-        this.currentPositions[player][piece] = position;
-        UI.setPiecePosition(player, piece, position);
+    rollDice() {
+        const player = this.currentPlayer;
+        this.state = STATE.DICE_ROLLED;
+
+        this.diceValue = Math.floor(Math.random() * 6) + 1;
+        
+        // Simulating the dice roll animation time
+        setTimeout(() => {
+            const possibleMoves = this.getPossibleMoves(player);
+
+            if(possibleMoves.length) {
+                
+                // FIX: Auto-move if only one piece can move.
+                if (possibleMoves.length === 1) {
+                    this.movePiece(player, possibleMoves[0], this.diceValue);
+                    return; // Exit as the move is handled automatically
+                }
+                
+                UI.highlightPieces(player, possibleMoves);
+            } else {
+                // No possible moves, turn passes to next player
+                this.incrementTurn();
+                this.state = STATE.DICE_NOT_ROLLED;
+            }
+        }, 800)
     }
-    
-    getMovablePieces(player, diceValue) {
+
+    getPossibleMoves(player) {
         const movablePieces = [];
 
         [0, 1, 2, 3].forEach(piece => {
             const currentPosition = this.currentPositions[player][piece];
+            const diceValue = this.diceValue;
 
-            // Piece in Base (Only moves out on a 6)
-            if (BASE_POSITIONS[player].includes(currentPosition)) {
-                if (diceValue === 6) {
+            if(currentPosition in BASE_POSITIONS[player]) {
+                // Piece is in base
+                if(diceValue === 6) {
                     movablePieces.push(piece);
                 }
-                return; // Piece cannot move if in base and not a 6
-            }
-            
-            // Piece is out (Calculate next position)
-            const nextPosition = this.getIncrementedPosition(player, piece, diceValue);
-            
-            // Check if the move is valid (i.e., not overshooting the HOME_POSITIONS)
-            if (nextPosition !== null) {
-                movablePieces.push(piece);
+            } else {
+                // Piece is on the board or in home entrance
+                const newPosition = this.getNewPosition(player, piece, diceValue);
+                if(newPosition <= HOME_POSITIONS[player]) { // Check if new position is not beyond home
+                    movablePieces.push(piece);
+                }
             }
         });
 
         return movablePieces;
     }
 
-    // FIX: Core logic to enable piece movement and correct turn flow
-    movePieceByDice() {
-        const player = PLAYERS[this.turn];
-        
-        // Find all pieces of the current player that can move with the dice value
-        const movablePieces = this.getMovablePieces(player, this.diceValue);
+    getNewPosition(player, piece, diceValue) {
+        const currentPosition = this.currentPositions[player][piece];
+        let newPosition = currentPosition + diceValue;
 
-        if (movablePieces.length > 0) {
-            // FIX: Highlight the movable pieces to make them 'active'
-            UI.highlightPieces(player, movablePieces);
-            
-            // The state remains STATE.DICE_ROLLED, waiting for piece click.
-            
-        } else {
-            // No movable pieces.
-            
-            // 1. Re-enable dice for the next action.
-            this.state = STATE.DICE_NOT_ROLLED;
-            
-            // 2. Check for turn pass: If it's not a 6, the turn passes immediately.
-            if (this.diceValue !== 6) {
-                this.incrementTurn();
-            }
-            // If it is a 6, the state is set to DICE_NOT_ROLLED, allowing a free re-roll.
+        // Check for turning point to home path
+        const turningPoint = TURNING_POINTS[player];
+
+        if(currentPosition <= turningPoint && newPosition > turningPoint) {
+            const overshoot = newPosition - turningPoint;
+            newPosition = HOME_ENTRANCE[player][0] + (overshoot - 1);
         }
+
+        return newPosition;
     }
 
-    movePiece(player, piece) {
-        const currentPosition = this.currentPositions[player][piece];
+    setPiecePosition(player, piece, newPosition) {
+        this.currentPositions[player][piece] = newPosition;
+        UI.setPiecePosition(player, piece, newPosition);
+    }
 
-        // 1. If piece is in base and rolled a 6, move it to START_POSITIONS
-        if (BASE_POSITIONS[player].includes(currentPosition) && this.diceValue === 6) {
-            this.setPiecePosition(player, piece, START_POSITIONS[player]);
-        } 
-        // 2. If piece is already out, move it by the dice value
-        else if (!BASE_POSITIONS[player].includes(currentPosition)) {
-            let newPosition = currentPosition;
-            for(let i = 0; i < this.diceValue; i++) {
-                newPosition = this.getIncrementedPosition(player, piece, 1); // Move one step at a time
-                if (newPosition === null) return; // Should not happen with getIncrementedPosition, but safety check
+    movePiece(player, piece, diceValue) {
+        this.state = STATE.MOVING;
+        UI.unhighlightPieces();
 
-                this.setPiecePosition(player, piece, newPosition);
+        let moves = diceValue;
+        const interval = setInterval(() => {
+            this.incrementPiecePosition(player, piece);
+            moves--;
+
+            if(moves === 0) {
+                clearInterval(interval);
+
+                if(this.hasPlayerWon(player)) {
+                    console.log(`Player ${player} has won!`);
+                    // Winner gets another turn (dice roll)
+                    this.state = STATE.DICE_NOT_ROLLED;
+                }
+                else { // not a win
+                    const isKill = this.checkForKill(player, piece);
+
+                    if(isKill || this.diceValue === 6) {
+                        this.state = STATE.DICE_NOT_ROLLED;
+                        return;
+                    }
+
+                    this.incrementTurn();
+                    // FIX: Deactivate piece and activate dice for the next player
+                    this.state = STATE.DICE_NOT_ROLLED; 
+                }
             }
-        } else {
-            return; // Invalid move
-        }
-
-        // 3. Check for kill/win condition and manage turn
-        setTimeout(() => {
-            const isWin = this.hasPlayerWon(player);
-            if (isWin) {
-                UI.showToast(`${player} wins!`, 'green');
-                this.state = STATE.DICE_NOT_ROLLED;
-                // Game over, no turn increment
-                return; 
-            }
-
-            const isKill = this.checkForKill(player, piece);
-
-            if(isKill || this.diceValue === 6) {
-                this.state = STATE.DICE_NOT_ROLLED; // Re-enable dice for another roll/free turn
-                return;
-            }
-
-            this.incrementTurn(); // Pass turn
         }, 200);
     }
 
@@ -229,10 +230,8 @@ export class Ludo {
             [0, 1, 2, 3].forEach(opponentPiece => {
                 const opponentPosition = this.currentPositions[opponent][opponentPiece];
 
-                // Check for a kill: same position and not a safe spot
                 if(currentPosition === opponentPosition && !SAFE_POSITIONS.includes(currentPosition)) {
                     this.setPiecePosition(opponent, opponentPiece, BASE_POSITIONS[opponent][opponentPiece]);
-                    UI.showToast(`${player} killed ${opponent}'s piece!`, 'red');
                     kill = true;
                 }
             })
@@ -242,58 +241,55 @@ export class Ludo {
     }
 
     hasPlayerWon(player) {
-        // Individual Win Condition: All 4 pieces of the current player are home.
-        return [0, 1, 2, 3].every(piece => this.currentPositions[player][piece] === HOME_POSITIONS[player]);
+        if (this.isTeamMode) {
+            // Team Win Condition: All 8 pieces (player + teammate) are home.
+            const teammate = TEAM_PLAYERS.getTeammate(player);
+            if (!teammate) return false; 
+            
+            const playerPiecesHome = [0, 1, 2, 3].every(piece => this.currentPositions[player][piece] === HOME_POSITIONS[player]);
+            const teammatePiecesHome = [0, 1, 2, 3].every(piece => this.currentPositions[teammate][piece] === HOME_POSITIONS[teammate]);
+
+            return playerPiecesHome && teammatePiecesHome;
+            
+        } else {
+            // Individual Win Condition: All 4 pieces of the current player are home.
+            return [0, 1, 2, 3].every(piece => this.currentPositions[player][piece] === HOME_POSITIONS[player]);
+        }
     }
 
     incrementPiecePosition(player, piece) {
-        this.setPiecePosition(player, piece, this.getIncrementedPosition(player, piece, 1));
+        const currentPosition = this.currentPositions[player][piece];
+
+        if(currentPosition in BASE_POSITIONS[player]) {
+            this.setPiecePosition(player, piece, START_POSITIONS[player]);
+        } else {
+            this.setPiecePosition(player, piece, this.getIncrementedPosition(player, piece));
+        }
     }
     
-    getIncrementedPosition(player, piece, steps = 1) {
-        let currentPosition = this.currentPositions[player][piece];
-        let newPosition = currentPosition;
+    getIncrementedPosition(player, piece) {
+        const currentPosition = this.currentPositions[player][piece];
 
-        for (let i = 0; i < steps; i++) {
-            // If the piece is in base, the next position is its start position (only on a 6, but we check here for simplicity)
-            if (BASE_POSITIONS[player].includes(newPosition)) {
-                return START_POSITIONS[player];
-            }
+        // Check for turning point 
+        if(currentPosition === TURNING_POINTS[player]) {
+            return HOME_ENTRANCE[player][0];
+        }
 
-            // Check for turning point (transition to the home entrance path)
-            if(newPosition === TURNING_POINTS[player]) {
-                newPosition = HOME_ENTRANCE[player][0];
-            }
-            // Check if piece is in the home entrance path (100-105, 200-205, etc.)
-            else if(newPosition >= HOME_ENTRANCE[player][0] && newPosition < HOME_POSITIONS[player]) {
-                newPosition++;
-            }
-            // Check if piece overshoots the home position
-            else if (newPosition === HOME_POSITIONS[player]) {
-                // Already home, no further movement is possible
-                return null; 
-            }
-            // Check for wrap around (51 wraps to 0)
-            else if(newPosition === 51) {
-                newPosition = 0;
-            }
-            // Normal movement
-            else {
-                newPosition++;
-            }
-            
-            // Check for overshoot in the loop
-            if (newPosition > HOME_POSITIONS[player]) {
-                return null;
-            }
+        // Check if piece is in the home entrance path
+        if(currentPosition >= HOME_ENTRANCE[player][0] && currentPosition < HOME_POSITIONS[player]) {
+            return currentPosition + 1;
         }
         
-        return newPosition;
+        // Check for wrap around
+        if(currentPosition === 51) {
+            return 0;
+        }
+
+        // Normal movement
+        return currentPosition + 1;
     }
 
     incrementTurn() {
-        // Find the index of the next active player in the PLAYERS array
-        let nextTurnIndex = (this.turn + 1) % PLAYERS.length;
-        this.turn = nextTurnIndex;
+        this.turn = (this.turn + 1) % PLAYERS.length;
     }
 }
