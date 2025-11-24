@@ -101,14 +101,14 @@
 .player-bases [player-id="P1"].player-base {
     bottom: 0;
     left: 0;
-    border-color: #1295e7; 
+    border-color: #2eafff; 
 }
 
 /* P2 base in Top Right - Green */
 .player-bases [player-id="P2"].player-base {
     top: 0;
     right: 0;
-    border-color: #049645; 
+    border-color: #00b550; 
 }
 
 /* P3 base in Top Left - Yellow */
@@ -122,7 +122,7 @@
 .player-bases [player-id="P4"].player-base {
     bottom: 0;
     right: 0;
-    border-color: #da1818; 
+    border-color: #e70a0a; 
 }
 
 
