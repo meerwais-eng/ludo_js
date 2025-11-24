@@ -127,12 +127,14 @@ export class Ludo {
 
             if(possibleMoves.length) {
                 
-                // FIX: Auto-move if only one piece can move.
-                if (possibleMoves.length === 1) {
+                // FIX: Auto-move if only one piece can move (and is outside the base).
+                if (possibleMoves.length === 1 && this.diceValue !== 6) {
                     this.movePiece(player, possibleMoves[0], this.diceValue);
                     return; // Exit as the move is handled automatically
                 }
-                
+                // Allow the user to select one of 4 pieces on a roll of 6
+                // or if they have multiple movable pieces.
+
                 UI.highlightPieces(player, possibleMoves);
             } else {
                 // No possible moves, turn passes to next player
@@ -149,7 +151,8 @@ export class Ludo {
             const currentPosition = this.currentPositions[player][piece];
             const diceValue = this.diceValue;
 
-            if(currentPosition in BASE_POSITIONS[player]) {
+            // FIX: Use Array.includes() to check if the piece is in the base
+            if(BASE_POSITIONS[player].includes(currentPosition)) {
                 // Piece is in base
                 if(diceValue === 6) {
                     movablePieces.push(piece);
@@ -260,7 +263,7 @@ export class Ludo {
     incrementPiecePosition(player, piece) {
         const currentPosition = this.currentPositions[player][piece];
 
-        if(currentPosition in BASE_POSITIONS[player]) {
+        if(BASE_POSITIONS[player].includes(currentPosition)) {
             this.setPiecePosition(player, piece, START_POSITIONS[player]);
         } else {
             this.setPiecePosition(player, piece, this.getIncrementedPosition(player, piece));
